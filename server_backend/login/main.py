@@ -1,8 +1,8 @@
 from flask import Flask
-from src.routes.login_routes import login_bp
+from src.routes.login_routes import login_route
 
 app = Flask(__name__)
-app.register_blueprint(login_bp)
+app.register_blueprint(login_route)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=3100)
