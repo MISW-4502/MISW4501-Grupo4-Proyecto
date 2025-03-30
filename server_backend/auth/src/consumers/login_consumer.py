@@ -3,6 +3,8 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from pythonjsonlogger import jsonlogger
 from src.services.auth_service import authenticate_user
+from src.services.auth_service import authenticate_user, generate_token
+
 
 # Config
 NUM_THREADS = 5
@@ -28,7 +30,15 @@ def process_message(body):
         data = json.loads(body)
         username = data.get("username")
         password = data.get("password")
-        authenticate_user(username, password)
+
+        logger.info({"message": f"📩 Mensaje recibido", "user": username})
+
+        if authenticate_user(username, password):
+            token = generate_token(username)
+            logger.info({"message": f"✅ Usuario autenticado", "user": username, "token": token})
+            # 🚨 En producción deberías enviar este token de vuelta (RabbitMQ, respuesta HTTP, etc.)
+        else:
+            logger.warning({"message": f"❌ Autenticación fallida", "user": username})
 
     except Exception as e:
         logger.error({"message": "🔥 Error procesando mensaje", "error": str(e)})

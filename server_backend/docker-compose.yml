@@ -47,6 +47,8 @@ services:
     ports:
       - "3200:3200"
     environment:
+      JWT_SECRET: supersecreta123
+      JWT_EXPIRATION_HOURS: 1
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin

@@ -3,3 +3,4 @@ SQLAlchemy==1.4.51
 psycopg2-binary==2.9.9
 Flask==2.2.5
 python-json-logger
+PyJWT==2.8.0
