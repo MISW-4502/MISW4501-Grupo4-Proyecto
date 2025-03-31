@@ -2,6 +2,8 @@ import os
 
 
 class Config:
+    REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
     JWT_SECRET = os.getenv("JWT_SECRET", "supersecreta123")
     JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", 1)) 
     RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")

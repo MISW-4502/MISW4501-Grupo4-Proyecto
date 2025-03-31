@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify
-from src.services.auth_service import authenticate_user, generate_token
+from src.services.auth_service import login_user, generate_token
+from src.services.auth_service import register_user
+
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": "ok"}), 200
+    return jsonify({"status": "oks"}), 200
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -15,15 +17,30 @@ def login():
 
     username = data.get('username')
     password = data.get('password')
+    ip = request.remote_addr
 
     if not username or not password:
         return jsonify({"error": "username y password son requeridos"}), 400
 
-    if authenticate_user(username, password):
-        token = generate_token(username)
-        return jsonify({"token": token}), 200
-    else:
-        return jsonify({"error": "Credenciales inválidas"}), 401
+    result, status = login_user(username, password, ip)
+    return jsonify(result), status
+
+@auth_bp.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "JSON requerido"}), 400
+
+    username = data.get("username")
+    password = data.get("password")
+    ip = request.remote_addr
+
+    if not username or not password:
+        return jsonify({"error": "username y password son requeridos"}), 400
+
+
+    result, status = register_user(username, password,ip)
+    return jsonify(result), status
 
 
 @auth_bp.route('/validate', methods=['POST'])

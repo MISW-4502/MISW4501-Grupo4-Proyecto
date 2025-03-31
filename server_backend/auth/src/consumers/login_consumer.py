@@ -2,8 +2,8 @@ import pika, os, time, json
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from pythonjsonlogger import jsonlogger
-from src.services.auth_service import authenticate_user
-from src.services.auth_service import authenticate_user, generate_token
+from src.services.auth_service import login_user
+from src.services.auth_service import login_user, generate_token
 
 
 # Config
@@ -33,7 +33,7 @@ def process_message(body):
 
         logger.info({"message": f"📩 Mensaje recibido", "user": username})
 
-        if authenticate_user(username, password):
+        if login_user(username, password):
             token = generate_token(username)
             logger.info({"message": f"✅ Usuario autenticado", "user": username, "token": token})
             # 🚨 En producción deberías enviar este token de vuelta (RabbitMQ, respuesta HTTP, etc.)

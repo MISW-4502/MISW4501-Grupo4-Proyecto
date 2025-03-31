@@ -12,6 +12,16 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     networks:
       - backend_net
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_net
+
+
 
   postgres_auth:
     image: postgres:15
@@ -47,6 +57,8 @@ services:
     ports:
       - "3200:3200"
     environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       JWT_SECRET: supersecreta123
       JWT_EXPIRATION_HOURS: 1
       RABBITMQ_HOST: rabbitmq
