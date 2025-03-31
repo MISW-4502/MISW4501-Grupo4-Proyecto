@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from src.services.auth_service import login_user, generate_token
 from src.services.auth_service import register_user
+from src.services.auth_service import initiate_password_reset
+from src.services.auth_service import reset_password_by_token
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -62,3 +64,31 @@ def validate_token():
         return jsonify({"valid": False, "error": "Token expirado"}), 401
     except InvalidTokenError:
         return jsonify({"valid": False, "error": "Token inválido"}), 401
+
+@auth_bp.route('/recover', methods=['POST'])
+def recover():
+    # TODO verificar cuand una username tenga un user con un proceso abierto y bloquear el intento de mas de tres veces 
+
+    data = request.get_json()
+    username = data.get("username")
+    ip = request.remote_addr
+    if not username:
+        return jsonify({"error": "username requerido"}), 400
+
+    result, status = initiate_password_reset(username,ip)
+    return jsonify(result), status
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    
+
+    token = request.args.get("token")
+    data = request.get_json()
+    new_password = data.get("new_password") if data else None
+
+    if not token or not new_password:
+        return jsonify({"error": "token en la URL y nueva contraseña en el body son requeridos"}), 400
+
+    result, status = reset_password_by_token(token, new_password)
+    return jsonify(result), status

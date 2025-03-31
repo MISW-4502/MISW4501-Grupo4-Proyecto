@@ -5,3 +5,4 @@ Flask==2.2.5
 python-json-logger
 PyJWT==2.8.0
 redis==5.0.1
+python-dotenv==1.0.1

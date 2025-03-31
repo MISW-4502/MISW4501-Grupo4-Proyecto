@@ -1,12 +1,12 @@
 import datetime
 import jwt
+import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.models.user_model import User
 from src.config.config import Config
 from src.services.ipblock_service import is_ip_blocked, register_failed_attempt, reset_ip
-
-
+from src.models.password_reset_model import PasswordReset
 
 engine = create_engine(
     Config.SQLALCHEMY_DATABASE_URI,
@@ -67,3 +67,52 @@ def generate_token(username):
     }
     token = jwt.encode(payload, Config.JWT_SECRET, algorithm="HS256")
     return token
+
+
+
+
+def initiate_password_reset(username,ip):
+    if is_ip_blocked(ip):
+        return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
+    session = SessionLocal()
+    try:
+        user = session.query(User).filter_by(username=username).first()
+        if not user:
+            return {"error": "Usuario no encontrado"}, 404
+
+        token = str(uuid.uuid4())
+        reset_entry = PasswordReset(username=username, token=token)
+        session.add(reset_entry)
+        session.commit()
+
+        # TODO crear microservicio de correo
+        # send_reset_email(username, token)
+
+        return {"message": "Correo de recuperación enviado", "token": token}, 200
+    finally:
+        session.close()
+
+
+
+def reset_password_by_token(token, new_password):
+    session = SessionLocal()
+    try:
+        reset = session.query(PasswordReset).filter_by(token=token).first()
+
+        if not reset:
+            return {"error": "Token inválido"}, 400
+
+        if reset.expires_at < datetime.datetime.utcnow():
+            return {"error": "Token expirado"}, 410
+
+        user = session.query(User).filter_by(username=reset.username).first()
+        if not user:
+            return {"error": "Usuario no encontrado"}, 404
+
+        user.password = new_password
+        session.delete(reset)  # elimina token usado
+        session.commit()
+
+        return {"message": "Contraseña actualizada con éxito"}, 200
+    finally:
+        session.close()
