@@ -21,8 +21,6 @@ services:
     networks:
       - backend_net
 
-
-
   postgres_auth:
     image: postgres:15
     container_name: postgres_auth
@@ -74,6 +72,23 @@ services:
       - postgres_auth
     networks:
       - backend_net
+
+  truck-service:
+      build: ./truck
+      container_name: truck-service
+      ports:
+        - "3300:3300"
+      environment:
+        DB_HOST: postgres_auth     
+        DB_PORT: 5432
+        DB_NAME: db_duck
+        DB_USER: duck_admin
+        DB_PASSWORD: admin123
+      depends_on:
+        - rabbitmq
+        - postgres_auth
+      networks:
+        - backend_net
 
 volumes:
   pgdata_auth:
