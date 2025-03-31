@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      - backend_net
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_net
+
+  postgres_auth:
+    image: postgres:15
+    container_name: postgres_auth
+    environment:
+      POSTGRES_DB: db_duck
+      POSTGRES_USER: duck_admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_auth:/var/lib/postgresql/data
+    networks:
+      - backend_net
+
+  login-service:
+    build: ./login
+    container_name: login-service
+    ports:
+      - "3100:3100"  
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend_net
+
+  auth-service:
+    build: ./auth
+    container_name: auth-service
+    ports:
+      - "3200:3200"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: supersecreta123
+      JWT_EXPIRATION_HOURS: 1
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+      DB_HOST: postgres_auth     
+      DB_PORT: 5432
+      DB_NAME: db_duck
+      DB_USER: duck_admin
+      DB_PASSWORD: admin123
+    depends_on:
+      - rabbitmq
+      - postgres_auth
+    networks:
+      - backend_net
+
+  truck-service:
+      build: ./truck
+      container_name: truck-service
+      ports:
+        - "3300:3300"
+      environment:
+        DB_HOST: postgres_auth     
+        DB_PORT: 5432
+        DB_NAME: db_duck
+        DB_USER: duck_admin
+        DB_PASSWORD: admin123
+      depends_on:
+        - rabbitmq
+        - postgres_auth
+      networks:
+        - backend_net
+
+volumes:
+  pgdata_auth:
+
+networks:
+  backend_net:
+    driver: bridge

@@ -1,8 +1,7 @@
-FROM python:3.10
-
+FROM python:3.9
 WORKDIR /app
-COPY . /app
-
-RUN pip install pipenv && pipenv install --system
-
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 3100
 CMD ["python", "main.py"]
