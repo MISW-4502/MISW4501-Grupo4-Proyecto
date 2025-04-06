@@ -3,17 +3,6 @@ import os
 
 class Config:
     
-    RABBIT_CONFIG = {
-    "host": os.getenv('RABBITMQ_HOST', 'rabbitmq-service-deploy'),
-    "user": os.getenv('RABBITMQ_USER', 'admin'),
-    "password": os.getenv('RABBITMQ_PASSWORD', 'admin'),
-    "queue": os.getenv('QUEUE_NAME', 'product_queue'),
-    "port": 5672
-}
-
-
-
-
 
     SQLALCHEMY_DATABASE_URI = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False

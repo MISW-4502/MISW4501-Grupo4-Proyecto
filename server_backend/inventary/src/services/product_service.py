@@ -1,9 +1,11 @@
 import pandas as pd
+import json
+import pika
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.config.config import Config
 from src.models.product_model import Product
-
+from src.services.producer import publish_to_queue
 
 engine = create_engine(
     Config.SQLALCHEMY_DATABASE_URI,
@@ -13,9 +15,8 @@ engine = create_engine(
 SessionLocal = sessionmaker(bind=engine)
 
 
-
 def process_excel_and_save(file):
-    session = SessionLocal()
+   
     try:
         df = pd.read_excel(file)
 
@@ -50,20 +51,19 @@ def process_excel_and_save(file):
 
             except Exception as e:
                 errors.append(f"Fila {index + 2}: {str(e)}")  # +2 por encabezado y 0-index
+        
 
         if valid_products:
-            session.bulk_save_objects(valid_products)
-            session.commit()
+            records = df.to_dict(orient='records')
+            publish_to_queue(records)
 
-        response = {
-            "cargados": len(valid_products),
+        return {
+            "enviados_a_cola": len(valid_products),
             "errores": errors
         }
 
-        return response
 
     except Exception as e:
-        session.rollback()
         return {"error": str(e)}
  
 
