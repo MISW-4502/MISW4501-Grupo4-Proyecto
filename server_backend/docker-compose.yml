@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      - backend_net
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_net
+
+
+  login-service:
+    build: ./login
+    container_name: login-service
+    ports:
+      - "3100:3100"  
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend_net
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.login.rule=PathPrefix(`/login`)"
+      - "traefik.http.services.login.loadbalancer.server.port=3100"
+
+
+  auth-service:
+    build: ./auth
+    container_name: auth-service
+    ports:
+      - "3200:3200"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: supersecreta123
+      JWT_EXPIRATION_HOURS: 1
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+      DB_HOST: 34.135.147.249     
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth-service.rule=PathPrefix(`/auth`)"
+      - "traefik.http.services.auth-service.loadbalancer.server.port=3200"
+
+
+
+  truck-service:
+      build: ./truck
+      container_name: truck-service
+      ports:
+        - "3300:3300"
+      environment:
+        DB_HOST: 34.135.147.249     
+        DB_PORT: 5432
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgres123
+      depends_on:
+        - rabbitmq
+      networks:
+        - backend_net
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.truck-service.rule=PathPrefix(`/truck`)"
+        - "traefik.http.services.truck-service.loadbalancer.server.port=3300"
+
+  inventary-service:
+      build: ./inventary
+      container_name: inventary-service
+      ports:
+        - "3400:3400"
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_USER: admin
+        RABBITMQ_PASS: admin
+        QUEUE_NAME: product_queue
+        DB_HOST: 34.135.147.249     
+        DB_PORT: 5432
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgres123
+      depends_on:
+        - rabbitmq
+      networks:
+        - backend_net
+      
+      labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.inventary.rule=PathPrefix(`/inventary`)"
+      - "traefik.http.services.inventary.loadbalancer.server.port=3400"
+      
+
+  product-worker:
+      build: ./product-worker
+      container_name: product-worker
+      ports:
+        - "3401:3401"
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_USER: admin
+        RABBITMQ_PASS: admin
+        QUEUE_NAME: product_queue
+        DB_HOST: 34.135.147.249     
+        DB_PORT: 5432
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgres123
+      depends_on:
+        - rabbitmq
+       
+      networks:
+        - backend_net
+
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"           # Entrada principal
+      - "8080:8080"       # Dashboard Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - backend_net
+
+
+
+volumes:
+  pgdata_auth:
+
+networks:
+  backend_net:
+    driver: bridge
+
