@@ -1,0 +1,422 @@
+{
+	"info": {
+		"_postman_id": "b9160147-31b0-4e80-9061-d4ff9148502c",
+		"name": "Duck_server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14512119",
+		"_collection_link": "https://lively-crescent-505153.postman.co/workspace/hola~b175e01f-6944-4213-b93a-76eb46d7d094/collection/14512119-b9160147-31b0-4e80-9061-d4ff9148502c?action=share&source=collection_link&creator=14512119"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Register_new_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"user@4example.com\",\r\n  \"nombre\": \"Nombre Apellido\",\r\n  \"password\": \"12345678\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/auth/ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"user@4example.com\",\r\n  \"password\": \"7654321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate_token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQDRleGFtcGxlLmNvbSIsImV4cCI6MTc0Mzk3NDI1OX0.h0tqfZIuldFmWOWW2QJMeTlcCBvr03t7l0EeXif7zKo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/validate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recover_pass",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"user@4example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/recover",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"recover"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset-pass",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"new_password\": \"7654321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/auth/reset-password?token=37138500-29eb-456d-ba8e-6d17c919939d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "37138500-29eb-456d-ba8e-6d17c919939d"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Truck",
+			"item": [
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/truck/ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"truck",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create-trucks",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"placa\": \"DEF458\",\r\n  \"capacidad\": 4500.00,\r\n  \"tipo\": \"Refrigerado\",\r\n  \"rutas\": \"Bogotá - Medellín\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/truck/trucks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"truck",
+								"trucks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Trucks",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n  \"tipo\": \"Carga\"\r\n\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/truck/trucks/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"truck",
+								"trucks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Trucks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/truck/trucks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"truck",
+								"trucks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventary",
+			"item": [
+				{
+					"name": "create_bulk",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/andre/Downloads/test_bulk.xlsx"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost/inventary/upload-products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"inventary",
+								"upload-products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Laptop Lenovo ThinkPad\",\r\n  \"descripcion\": \"Laptop empresarial con 16GB RAM y 512GB SSD\",\r\n  \"precio_unitario\": 3250.99,\r\n  \"tipo\": \"Tecnología\",\r\n  \"cantidad\": 15,\r\n  \"ubicacion\": \"Bodega Central - Estante 3\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3400/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3400",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/inventary/ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"inventary",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/inventary/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"inventary",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Products",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cantidad\": 11\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/inventary/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"inventary",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
