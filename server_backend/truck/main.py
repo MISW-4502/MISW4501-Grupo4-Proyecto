@@ -4,7 +4,7 @@ from src.routes.truck_routes import trucks_bp
 
 
 app = Flask(__name__)
-app.register_blueprint(trucks_bp)
+app.register_blueprint(trucks_bp, url_prefix="/truck")
 
 if __name__ == '__main__':
 

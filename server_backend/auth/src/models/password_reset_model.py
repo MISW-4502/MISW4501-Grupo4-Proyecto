@@ -5,7 +5,7 @@ import datetime
 Base = declarative_base()
 
 class PasswordReset(Base):
-    __tablename__ = 'password_resets'
+    __tablename__ = 'restablecimieno_password'
 
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False)

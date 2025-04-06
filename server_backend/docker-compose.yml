@@ -35,7 +35,6 @@ services:
       - rabbitmq
     networks:
       - backend_net
-      - traefik
 
     labels:
       - "traefik.enable=true"
@@ -65,11 +64,11 @@ services:
       - rabbitmq
     networks:
       - backend_net
-      - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.login.rule=PathPrefix(`/auth`)"
-      - "traefik.http.services.login.loadbalancer.server.port=3200"
+      - "traefik.http.routers.auth-service.rule=PathPrefix(`/auth`)"
+      - "traefik.http.services.auth-service.loadbalancer.server.port=3200"
+
 
 
   truck-service:
@@ -87,11 +86,10 @@ services:
         - rabbitmq
       networks:
         - backend_net
-        - traefik
       labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.login.rule=PathPrefix(`/truck`)"
-      - "traefik.http.services.login.loadbalancer.server.port=3300"
+        - "traefik.enable=true"
+        - "traefik.http.routers.truck-service.rule=PathPrefix(`/truck`)"
+        - "traefik.http.services.truck-service.loadbalancer.server.port=3300"
 
   inventary-service:
       build: ./inventary
@@ -112,7 +110,6 @@ services:
         - rabbitmq
       networks:
         - backend_net
-        - traefik
       
       labels:
       - "traefik.enable=true"
@@ -140,7 +137,6 @@ services:
        
       networks:
         - backend_net
-        - traefik
 
 
   traefik:
@@ -156,7 +152,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
-      - traefik
+      - backend_net
 
 
 
@@ -166,5 +162,4 @@ volumes:
 networks:
   backend_net:
     driver: bridge
-  traefik:
-    driver: bridge
+
