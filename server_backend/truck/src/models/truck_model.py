@@ -1,15 +1,15 @@
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy import Column, String, DateTime, Integer, Numeric, Text
 
 Base = declarative_base()
 
 class Truck(Base):
-    __tablename__ = 'trucks'
+    __tablename__ = 'camion'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    license_plate = Column(String(20), nullable=False, unique=True)
-    model = Column(String(50), nullable=False)
-    brand = Column(String(50), nullable=False)
-    status = Column(String(20), nullable=False, default='ACTIVE')
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    camion_id = Column(Integer, primary_key=True, autoincrement=True)
+    placa = Column(String(50), nullable=False, unique=True)
+    capacidad = Column(Numeric(12, 2), nullable=False)
+    tipo = Column(String(50), nullable=True)
+    fecha_registro = Column(DateTime, default=datetime.datetime.utcnow)
+    rutas = Column(Text, nullable=True)
