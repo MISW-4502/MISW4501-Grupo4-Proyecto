@@ -25,10 +25,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/register",
+							"raw": "http://34.55.129.65/auth/register",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -44,10 +47,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/auth/ping",
+							"raw": "http://34.55.129.65/auth/ping",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -72,10 +78,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/login",
+							"raw": "http://34.55.129.65/auth/login",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -92,7 +101,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQDRleGFtcGxlLmNvbSIsImV4cCI6MTc0Mzk3NDI1OX0.h0tqfZIuldFmWOWW2QJMeTlcCBvr03t7l0EeXif7zKo\"\r\n}",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQDRleGFtcGxlLmNvbSIsImV4cCI6MTc0Mzk4MjE0MH0.F8tnWcxYLXRYlNhLqQx19ToOrs5jLl8rC_4qXEgaTvk\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,10 +109,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/validate",
+							"raw": "http://34.55.129.65/auth/validate",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -128,10 +140,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/recover",
+							"raw": "http://34.55.129.65/auth/recover",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -156,10 +171,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/reset-password?token=37138500-29eb-456d-ba8e-6d17c919939d",
+							"raw": "http://34.55.129.65/auth/reset-password?token=a1aa7cda-9b16-4d39-84eb-a966f3d62389",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -168,7 +186,7 @@
 							"query": [
 								{
 									"key": "token",
-									"value": "37138500-29eb-456d-ba8e-6d17c919939d"
+									"value": "a1aa7cda-9b16-4d39-84eb-a966f3d62389"
 								}
 							]
 						}
@@ -186,10 +204,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/truck/ping",
+							"raw": "http://34.55.129.65/truck/ping",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"truck",
@@ -206,7 +227,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"placa\": \"DEF458\",\r\n  \"capacidad\": 4500.00,\r\n  \"tipo\": \"Refrigerado\",\r\n  \"rutas\": \"Bogotá - Medellín\"\r\n}\r\n",
+							"raw": "{\r\n  \"placa\": \"DEF454\",\r\n  \"capacidad\": 4500.00,\r\n  \"tipo\": \"Refrigerado\",\r\n  \"rutas\": \"Bogotá - Medellín\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -214,10 +235,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/truck/trucks",
+							"raw": "http://34.55.129.65/truck/trucks",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"truck",
@@ -242,10 +266,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/truck/trucks/1",
+							"raw": "http://34.55.129.65/truck/trucks/1",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"truck",
@@ -274,10 +301,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/truck/trucks",
+							"raw": "http://34.55.129.65/truck/trucks",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"truck",
@@ -308,10 +338,13 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost/inventary/upload-products",
+							"raw": "http://34.55.129.65/inventary/upload-products",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"inventary",
@@ -336,13 +369,16 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3400/products",
+							"raw": "http://34.55.129.65/inventary/products",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
-							"port": "3400",
 							"path": [
+								"inventary",
 								"products"
 							]
 						}
@@ -355,10 +391,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/inventary/ping",
+							"raw": "http://34.55.129.65/inventary/ping",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"inventary",
@@ -374,10 +413,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/inventary/products",
+							"raw": "http://34.55.129.65/inventary/products",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"inventary",
@@ -394,7 +436,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"cantidad\": 11\r\n}",
+							"raw": "{\r\n    \"cantidad\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -402,10 +444,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/inventary/products/1",
+							"raw": "http://34.55.129.65/inventary/products/1",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"inventary",
@@ -417,6 +462,40 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ip_server",
+			"value": "34.55.129.65",
+			"type": "string"
+		},
+		{
+			"key": "ip_loca",
+			"value": "localhost",
+			"type": "string"
 		}
 	]
 }
