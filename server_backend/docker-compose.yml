@@ -10,6 +10,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+    - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+    - "traefik.http.middlewares.rabbitmq-stripprefix.stripPrefix.prefixes=/rabbitmq"
+    - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+
     networks:
       - backend_net
   
