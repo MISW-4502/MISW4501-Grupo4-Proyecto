@@ -16,11 +16,10 @@ SessionLocal = sessionmaker(bind=engine)
 
 
 def process_excel_and_save(file):
-   
     try:
         df = pd.read_excel(file)
 
-        required_columns = {'name', 'price', 'quantity', 'manufacturer', 'location'}
+        required_columns = {'nombre', 'precio_unitario', 'cantidad', 'descripcion', 'tipo', 'ubicacion'}
         if not required_columns.issubset(df.columns):
             raise ValueError(f"Faltan columnas requeridas. Se requieren: {required_columns}")
 
@@ -29,73 +28,64 @@ def process_excel_and_save(file):
 
         for index, row in df.iterrows():
             try:
-                # Validaciones básicas
-                if pd.isna(row['name']) or pd.isna(row['price']) or pd.isna(row['quantity']):
-                    raise ValueError("Campos obligatorios vacíos (name, price o quantity).")
+                if pd.isna(row['nombre']) or pd.isna(row['precio_unitario']):
+                    raise ValueError("Campos obligatorios vacíos (nombre o precio_unitario).")
 
-                if not isinstance(row['price'], (int, float)):
-                    raise ValueError("Precio no es un número válido.")
-
-                if not isinstance(row['quantity'], (int, float)):
-                    raise ValueError("Cantidad no es un número válido.")
-
-                product = Product(
-                    name=str(row['name']),
-                    price=float(row['price']),
-                    quantity=int(row['quantity']),
-                    manufacturer=str(row['manufacturer']) if not pd.isna(row['manufacturer']) else None,
-                    location=str(row['location']) if not pd.isna(row['location']) else None
-                )
+                product = {
+                    "nombre": str(row['nombre']),
+                    "precio_unitario": float(row['precio_unitario']),
+                    "cantidad": int(row['cantidad']) if not pd.isna(row['cantidad']) else 0,
+                    "descripcion": str(row['descripcion']) if not pd.isna(row['descripcion']) else None,
+                    "tipo": str(row['tipo']) if not pd.isna(row['tipo']) else None,
+                    "ubicacion": str(row['ubicacion']) if not pd.isna(row['ubicacion']) else None
+                }
 
                 valid_products.append(product)
 
             except Exception as e:
-                errors.append(f"Fila {index + 2}: {str(e)}")  # +2 por encabezado y 0-index
-        
+                errors.append(f"Fila {index + 2}: {str(e)}")  # Excel es 1-based + encabezado
 
         if valid_products:
-            records = df.to_dict(orient='records')
-            publish_to_queue(records)
+            publish_to_queue(valid_products)
 
         return {
             "enviados_a_cola": len(valid_products),
             "errores": errors
         }
 
-
     except Exception as e:
         return {"error": str(e)}
- 
 
 def create_product(data):
     session = SessionLocal()
     try:
-        name = data.get('name')
-        price = data.get('price')
-        quantity = data.get('quantity')
+        nombre = data.get('nombre')
+        precio = data.get('precio_unitario')
 
-        if not name or price is None or quantity is None:
-            return None, "Campos 'name', 'price' y 'quantity' son obligatorios"
+        if not nombre or precio is None:
+            return None, "Campos 'nombre' y 'precio_unitario' son obligatorios"
 
         product = Product(
-            name=name,
-            price=float(price),
-            quantity=int(quantity),
-            manufacturer=data.get('manufacturer'),
-            location=data.get('location')
+            nombre=nombre,
+            descripcion=data.get('descripcion'),
+            precio_unitario=float(precio),
+            tipo=data.get('tipo'),
+            cantidad=int(data.get('cantidad', 0)),
+            ubicacion=data.get('ubicacion')
         )
 
         session.add(product)
         session.commit()
 
         return {
-            "id": product.id,
-            "name": product.name,
-            "price": float(product.price),
-            "quantity": product.quantity,
-            "manufacturer": product.manufacturer,
-            "location": product.location,
-            "created_at": product.created_at.isoformat() if product.created_at else None
+            "producto_id": product.producto_id,
+            "nombre": product.nombre,
+            "precio_unitario": float(product.precio_unitario),
+            "cantidad": product.cantidad,
+            "descripcion": product.descripcion,
+            "tipo": product.tipo,
+            "ubicacion": product.ubicacion,
+            "creado_en": product.creado_en.isoformat() if product.creado_en else None
         }, None
     except Exception as e:
         session.rollback()
@@ -108,44 +98,46 @@ def list_products():
     session = SessionLocal()
     try:
         products = session.query(Product).all()
-        result = [
+        return [
             {
-                "id": p.id,
-                "name": p.name,
-                "price": float(p.price),
-                "quantity": p.quantity,
-                "manufacturer": p.manufacturer,
-                "location": p.location,
-                "created_at": p.created_at.isoformat() if p.created_at else None
+                "producto_id": p.producto_id,
+                "nombre": p.nombre,
+                "precio_unitario": float(p.precio_unitario) if p.precio_unitario else None,
+                "cantidad": p.cantidad,
+                "descripcion": p.descripcion,
+                "tipo": p.tipo,
+                "ubicacion": p.ubicacion,
+                "creado_en": p.creado_en.isoformat() if p.creado_en else None
             } for p in products
         ]
-        return result
     finally:
         session.close()
 
 
-def update_product(product_id, data):
+def update_product(producto_id, data):
     session = SessionLocal()
     try:
-        product = session.query(Product).get(product_id)
+        product = session.query(Product).get(producto_id)
         if not product:
             return None, "Producto no encontrado"
 
-        product.name = data.get('name', product.name)
-        product.price = data.get('price', product.price)
-        product.quantity = data.get('quantity', product.quantity)
-        product.manufacturer = data.get('manufacturer', product.manufacturer)
-        product.location = data.get('location', product.location)
+        product.nombre = data.get('nombre', product.nombre)
+        product.descripcion = data.get('descripcion', product.descripcion)
+        product.precio_unitario = data.get('precio_unitario', product.precio_unitario)
+        product.tipo = data.get('tipo', product.tipo)
+        product.cantidad = data.get('cantidad', product.cantidad)
+        product.ubicacion = data.get('ubicacion', product.ubicacion)
 
         session.commit()
         return {
-            "id": product.id,
-            "name": product.name,
-            "price": float(product.price),
-            "quantity": product.quantity,
-            "manufacturer": product.manufacturer,
-            "location": product.location,
-            "created_at": product.created_at.isoformat() if product.created_at else None
+            "producto_id": product.producto_id,
+            "nombre": product.nombre,
+            "precio_unitario": float(product.precio_unitario),
+            "cantidad": product.cantidad,
+            "descripcion": product.descripcion,
+            "tipo": product.tipo,
+            "ubicacion": product.ubicacion,
+            "creado_en": product.creado_en.isoformat() if product.creado_en else None
         }, None
     except Exception as e:
         session.rollback()
@@ -153,11 +145,11 @@ def update_product(product_id, data):
     finally:
         session.close()
 
-
-def delete_product(product_id):
+        
+def delete_product(producto_id):
     session = SessionLocal()
     try:
-        product = session.query(Product).get(product_id)
+        product = session.query(Product).get(producto_id)
         if not product:
             return False, "Producto no encontrado"
 

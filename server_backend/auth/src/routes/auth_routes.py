@@ -3,6 +3,9 @@ from src.services.auth_service import login_user, generate_token
 from src.services.auth_service import register_user
 from src.services.auth_service import initiate_password_reset
 from src.services.auth_service import reset_password_by_token
+from jwt import ExpiredSignatureError, InvalidTokenError
+import jwt
+from src.config.config import Config
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -27,28 +30,23 @@ def login():
     result, status = login_user(username, password, ip)
     return jsonify(result), status
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "JSON requerido"}), 400
-
-    username = data.get("username")
+    email = data.get("email")
+    nombre = data.get("nombre")
     password = data.get("password")
     ip = request.remote_addr
 
-    if not username or not password:
-        return jsonify({"error": "username y password son requeridos"}), 400
+    if not all([email, nombre, password]):
+        return {"error": "Faltan campos requeridos"}, 400
 
-
-    result, status = register_user(username, password,ip)
-    return jsonify(result), status
-
+    result, status = register_user(email, nombre, password, ip)
+    return result, status
 
 @auth_bp.route('/validate', methods=['POST'])
 def validate_token():
-    from jwt import ExpiredSignatureError, InvalidTokenError
-    import jwt
+
 
     data = request.get_json()
     token = data.get("token")
@@ -57,7 +55,6 @@ def validate_token():
         return jsonify({"error": "Token requerido"}), 400
 
     try:
-        from src.config.config import Config
         decoded = jwt.decode(token, Config.JWT_SECRET, algorithms=["HS256"])
         return jsonify({"valid": True, "username": decoded.get("sub")}), 200
     except ExpiredSignatureError:
