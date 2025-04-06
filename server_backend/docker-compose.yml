@@ -90,6 +90,23 @@ services:
       networks:
         - backend_net
 
+  inventary-service:
+      build: ./inventary
+      container_name: inventary-service
+      ports:
+        - "3400:3400"
+      environment:
+        DB_HOST: postgres_auth     
+        DB_PORT: 5432
+        DB_NAME: db_duck
+        DB_USER: duck_admin
+        DB_PASSWORD: admin123
+      depends_on:
+        - rabbitmq
+        - postgres_auth
+      networks:
+        - backend_net
+
 volumes:
   pgdata_auth:
 
