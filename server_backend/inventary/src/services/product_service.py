@@ -15,9 +15,18 @@ engine = create_engine(
 SessionLocal = sessionmaker(bind=engine)
 
 
+import pandas as pd
+
 def process_excel_and_save(file):
     try:
-        df = pd.read_excel(file)
+        filename = file.filename.lower()
+
+        if filename.endswith('.csv'):
+            df = pd.read_csv(file)
+        elif filename.endswith(('.xls', '.xlsx')):
+            df = pd.read_excel(file)
+        else:
+            raise ValueError("Formato de archivo no soportado. Debe ser .csv, .xls o .xlsx")
 
         required_columns = {'nombre', 'precio_unitario', 'cantidad', 'descripcion', 'tipo', 'ubicacion'}
         if not required_columns.issubset(df.columns):
@@ -43,7 +52,7 @@ def process_excel_and_save(file):
                 valid_products.append(product)
 
             except Exception as e:
-                errors.append(f"Fila {index + 2}: {str(e)}")  # Excel es 1-based + encabezado
+                errors.append(f"Fila {index + 2}: {str(e)}")
 
         if valid_products:
             publish_to_queue(valid_products)
@@ -55,6 +64,7 @@ def process_excel_and_save(file):
 
     except Exception as e:
         return {"error": str(e)}
+
 
 def create_product(data):
     session = SessionLocal()
@@ -94,22 +104,39 @@ def create_product(data):
         session.close()
 
 
-def list_products():
+def list_products(product_id=None):
     session = SessionLocal()
     try:
-        products = session.query(Product).all()
-        return [
-            {
-                "producto_id": p.producto_id,
-                "nombre": p.nombre,
-                "precio_unitario": float(p.precio_unitario) if p.precio_unitario else None,
-                "cantidad": p.cantidad,
-                "descripcion": p.descripcion,
-                "tipo": p.tipo,
-                "ubicacion": p.ubicacion,
-                "creado_en": p.creado_en.isoformat() if p.creado_en else None
-            } for p in products
-        ]
+        if product_id:
+            # Fetch a specific product by ID
+            product = session.query(Product).get(product_id)
+            if not product:
+                return None, "Producto no encontrado"
+            return {
+                "producto_id": product.producto_id,
+                "nombre": product.nombre,
+                "precio_unitario": float(product.precio_unitario) if product.precio_unitario else None,
+                "cantidad": product.cantidad,
+                "descripcion": product.descripcion,
+                "tipo": product.tipo,
+                "ubicacion": product.ubicacion,
+                "creado_en": product.creado_en.isoformat() if product.creado_en else None
+            }, None
+        else:
+            # Fetch all products
+            products = session.query(Product).all()
+            return [
+                {
+                    "producto_id": p.producto_id,
+                    "nombre": p.nombre,
+                    "precio_unitario": float(p.precio_unitario) if p.precio_unitario else None,
+                    "cantidad": p.cantidad,
+                    "descripcion": p.descripcion,
+                    "tipo": p.tipo,
+                    "ubicacion": p.ubicacion,
+                    "creado_en": p.creado_en.isoformat() if p.creado_en else None
+                } for p in products
+            ], None
     finally:
         session.close()
 
