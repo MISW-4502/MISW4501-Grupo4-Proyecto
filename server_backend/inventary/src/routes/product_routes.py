@@ -39,6 +39,15 @@ def create_product_endpoint():
         return jsonify({'error': error}), 400
     return jsonify(result), 201
 
+@inventary_bp.route('/products/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+    try:
+        result, error = list_products(product_id=product_id)
+        if error:
+            return jsonify({'error': error}), 404
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @inventary_bp.route('/products', methods=['GET'])
 def get_all_products():
