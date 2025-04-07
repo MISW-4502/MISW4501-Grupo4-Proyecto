@@ -150,7 +150,7 @@ def get_truck_by_id(truck_id):
             "rutas": truck.rutas
         }
 
-        return response
+        return {response}, 200
 
     except Exception as e:
         return {"error": f"Error al obtener camión: {str(e)}"}, 500
