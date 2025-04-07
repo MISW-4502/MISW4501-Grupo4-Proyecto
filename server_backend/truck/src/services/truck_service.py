@@ -132,3 +132,27 @@ def list_trucks():
         return {"error": f"Error al listar camiones: {str(e)}"}, 500
     finally:
         session.close()
+
+
+def get_truck_by_id(truck_id):
+    session = SessionLocal()
+    try:
+        truck = session.query(Truck).filter(Truck.camion_id == truck_id).first()
+        if not truck:
+            return {"error": "Camión no encontrado"}, 404
+
+        response = {
+            "camion_id": truck.camion_id,
+            "placa": truck.placa,
+            "capacidad": float(truck.capacidad),
+            "tipo": truck.tipo,
+            "fecha_registro": truck.fecha_registro.isoformat() if truck.fecha_registro else None,
+            "rutas": truck.rutas
+        }
+
+        return {"camion": response}, 200
+
+    except Exception as e:
+        return {"error": f"Error al obtener camión: {str(e)}"}, 500
+    finally:
+        session.close()
