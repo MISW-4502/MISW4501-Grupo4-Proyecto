@@ -41,7 +41,7 @@ def login_user(email, password, ip):
         session.close()
 
 
-def register_user(email, nombre, password, ip):
+def register_user(email, nombre,rol, password, ip):
     if is_ip_blocked(ip):
         return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
 
@@ -51,7 +51,7 @@ def register_user(email, nombre, password, ip):
             return {"error": "El email ya está registrado"}, 409
 
         hashed_pw = hash_password(password)
-        new_user = Usuario(email=email, nombre=nombre,  password=hashed_pw)
+        new_user = Usuario(email=email, rol=rol ,nombre=nombre,  password=hashed_pw)
         session.add(new_user)
         session.commit()
 
