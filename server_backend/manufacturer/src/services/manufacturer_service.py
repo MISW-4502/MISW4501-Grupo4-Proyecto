@@ -3,15 +3,15 @@ from sqlalchemy.orm import sessionmaker
 from src.models.manufacturer_model import Manufacturer
 from src.config.config import Config
 
-engine = create_engine(
-    Config.SQLALCHEMY_DATABASE_URI,
-    **Config.SQLALCHEMY_ENGINE_OPTIONS
-)
-
-SessionLocal = sessionmaker(bind=engine)
+def get_session():
+    engine = create_engine(
+        Config.SQLALCHEMY_DATABASE_URI,
+        **Config.SQLALCHEMY_ENGINE_OPTIONS
+    )
+    return sessionmaker(bind=engine)()
 
 def create_manufacturer(data):
-    session = SessionLocal()
+    session = get_session()
     try:
         manufacturer = Manufacturer(
             nombre=data["nombre"],
@@ -38,7 +38,7 @@ def create_manufacturer(data):
         session.close()
 
 def edit_manufacturer(data, id):
-    session = SessionLocal()
+    session = get_session()
     try:
         manufacturer = session.query(Manufacturer).filter_by(fabricante_id=id).first()
         if not manufacturer:
@@ -68,7 +68,7 @@ def edit_manufacturer(data, id):
         session.close()
 
 def delete_manufacturer(id):
-    session = SessionLocal()
+    session = get_session()
     try:
         manufacturer = session.query(Manufacturer).filter_by(fabricante_id=id).first()
         if not manufacturer:
@@ -84,7 +84,7 @@ def delete_manufacturer(id):
         session.close()
 
 def list_manufacturers():
-    session = SessionLocal()
+    session = get_session()
     try:
         manufacturers = session.query(Manufacturer).all()
         result = [{
@@ -101,7 +101,7 @@ def list_manufacturers():
         session.close()
 
 def get_manufacturer_by_id(id):
-    session = SessionLocal()
+    session = get_session()
     try:
         m = session.query(Manufacturer).filter_by(fabricante_id=id).first()
         if not m:
