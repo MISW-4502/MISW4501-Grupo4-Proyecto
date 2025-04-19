@@ -9,25 +9,27 @@ from src.config.config import Config
 from src.services.ipblock_service import is_ip_blocked, register_failed_attempt, reset_ip
 from src.models.password_reset_model import PasswordReset
 
-engine = create_engine(
-    Config.SQLALCHEMY_DATABASE_URI,
-    **Config.SQLALCHEMY_ENGINE_OPTIONS
-)
+# 🔧 Nuevo: función para obtener sesión (no se ejecuta al importar el módulo)
+def get_session():
+    engine = create_engine(
+        Config.SQLALCHEMY_DATABASE_URI,
+        **Config.SQLALCHEMY_ENGINE_OPTIONS
+    )
+    return sessionmaker(bind=engine)()
 
-SessionLocal = sessionmaker(bind=engine)
-
+# 🔐 Hash y verificación de contraseñas
 def hash_password(plain_password):
     return bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def check_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
-
+# 🔐 Login
 def login_user(email, password, ip):
     if is_ip_blocked(ip):
         return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
 
-    session = SessionLocal()
+    session = get_session()
     try:
         user = session.query(Usuario).filter_by(email=email).first()
         if not user or not check_password(password, user.password):
@@ -40,18 +42,18 @@ def login_user(email, password, ip):
     finally:
         session.close()
 
-
-def register_user(email, nombre, password, ip):
+# 🧾 Registro
+def register_user(email, nombre, rol, password, ip):
     if is_ip_blocked(ip):
         return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
 
-    session = SessionLocal()
+    session = get_session()
     try:
         if session.query(Usuario).filter_by(email=email).first():
             return {"error": "El email ya está registrado"}, 409
 
         hashed_pw = hash_password(password)
-        new_user = Usuario(email=email, nombre=nombre,  password=hashed_pw)
+        new_user = Usuario(email=email, rol=rol, nombre=nombre, password=hashed_pw)
         session.add(new_user)
         session.commit()
 
@@ -60,7 +62,7 @@ def register_user(email, nombre, password, ip):
     finally:
         session.close()
 
-
+# 🔐 Token JWT
 def generate_token(email):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=Config.JWT_EXPIRATION_HOURS)
     payload = {
@@ -70,12 +72,12 @@ def generate_token(email):
     token = jwt.encode(payload, Config.JWT_SECRET, algorithm="HS256")
     return token
 
-
+# 🔁 Inicio de recuperación de contraseña
 def initiate_password_reset(email, ip):
     if is_ip_blocked(ip):
         return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
 
-    session = SessionLocal()
+    session = get_session()
     try:
         user = session.query(Usuario).filter_by(email=email).first()
         if not user:
@@ -94,9 +96,9 @@ def initiate_password_reset(email, ip):
     finally:
         session.close()
 
-
+# 🔁 Cambio de contraseña con token
 def reset_password_by_token(token, new_password):
-    session = SessionLocal()
+    session = get_session()
     try:
         reset = session.query(PasswordReset).filter_by(token=token).first()
         if not reset:

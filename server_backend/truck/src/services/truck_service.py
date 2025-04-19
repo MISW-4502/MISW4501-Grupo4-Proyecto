@@ -5,15 +5,16 @@ from sqlalchemy.orm import sessionmaker
 from src.models.truck_model import Truck
 from src.config.config import Config
 
-engine = create_engine(
-    Config.SQLALCHEMY_DATABASE_URI,
-    **Config.SQLALCHEMY_ENGINE_OPTIONS
-)
 
-SessionLocal = sessionmaker(bind=engine)
+def get_session():
+    engine = create_engine(
+        Config.SQLALCHEMY_DATABASE_URI,
+        **Config.SQLALCHEMY_ENGINE_OPTIONS
+    )
+    return sessionmaker(bind=engine)()
 
 def create_truck(data):
-    session = SessionLocal()
+    session = get_session()
     try:
         # Validar placa única
         existing_truck = session.query(Truck).filter_by(placa=data['placa']).first()
@@ -50,7 +51,7 @@ def create_truck(data):
 
 
 def edit_truck(data, id):
-    session = SessionLocal()
+    session = get_session()
     try:
         truck = session.query(Truck).filter(Truck.camion_id == id).first()
         if not truck:
@@ -94,7 +95,7 @@ def edit_truck(data, id):
 
 
 def delete_truck(id):
-    session = SessionLocal()
+    session = get_session()
     try:
         truck = session.query(Truck).filter(Truck.camion_id == id).first()
         if not truck:
@@ -112,7 +113,7 @@ def delete_truck(id):
 
 
 def list_trucks():
-    session = SessionLocal()
+    session = get_session()
     try:
         trucks = session.query(Truck).all()
         result = []
@@ -130,5 +131,29 @@ def list_trucks():
 
     except Exception as e:
         return {"error": f"Error al listar camiones: {str(e)}"}, 500
+    finally:
+        session.close()
+
+
+def get_truck_by_id(truck_id):
+    session = get_session()
+    try:
+        truck = session.query(Truck).filter(Truck.camion_id == truck_id).first()
+        if not truck:
+            return {"error": "Camión no encontrado"}, 404
+
+        response = {
+            "camion_id": truck.camion_id,
+            "placa": truck.placa,
+            "capacidad": float(truck.capacidad),
+            "tipo": truck.tipo,
+            "fecha_registro": truck.fecha_registro.isoformat() if truck.fecha_registro else None,
+            "rutas": truck.rutas
+        }
+
+        return response, 200
+
+    except Exception as e:
+        return {"error": f"Error al obtener camión: {str(e)}"}, 500
     finally:
         session.close()

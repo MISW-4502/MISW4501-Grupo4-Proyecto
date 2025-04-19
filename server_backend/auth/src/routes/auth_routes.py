@@ -35,13 +35,14 @@ def register():
     data = request.get_json()
     email = data.get("email")
     nombre = data.get("nombre")
+    rol = data.get("rol")
     password = data.get("password")
     ip = request.remote_addr
 
-    if not all([email, nombre, password]):
+    if not all([email, nombre,rol, password]):
         return {"error": "Faltan campos requeridos"}, 400
 
-    result, status = register_user(email, nombre, password, ip)
+    result, status = register_user(email, nombre, rol, password, ip)
     return result, status
 
 @auth_bp.route('/validate', methods=['POST'])

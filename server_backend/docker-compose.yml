@@ -29,26 +29,6 @@ services:
       - backend_net
 
 
-  login-service:
-    build: ./login
-    container_name: login-service
-    ports:
-      - "3100:3100"  
-    environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: admin
-      RABBITMQ_PASS: admin
-    depends_on:
-      - rabbitmq
-    networks:
-      - backend_net
-
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.login.rule=PathPrefix(`/login`)"
-      - "traefik.http.services.login.loadbalancer.server.port=3100"
-
-
   auth-service:
     build: ./auth
     container_name: auth-service
@@ -144,6 +124,30 @@ services:
        
       networks:
         - backend_net
+
+  manufacturer-service:
+    build: ./manufacturer
+    container_name: manufacturer-service
+    ports:
+      - "3404:3404"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASSWORD: admin
+      QUEUE_NAME: manufacturer_queue
+      DB_HOST: 34.135.147.249     
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manufacturer-service.rule=PathPrefix(`/manufacturer`)"
+      - "traefik.http.services.manufacturer-service.loadbalancer.server.port=3404"
 
 
   traefik:

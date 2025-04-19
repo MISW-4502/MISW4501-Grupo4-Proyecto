@@ -7,12 +7,14 @@ from src.config.config import Config
 from src.models.product_model import Product
 from src.services.producer import publish_to_queue
 
-engine = create_engine(
-    Config.SQLALCHEMY_DATABASE_URI,
-    **Config.SQLALCHEMY_ENGINE_OPTIONS
-)
 
-SessionLocal = sessionmaker(bind=engine)
+def get_session():
+    engine = create_engine(
+        Config.SQLALCHEMY_DATABASE_URI,
+        **Config.SQLALCHEMY_ENGINE_OPTIONS
+    )
+    return sessionmaker(bind=engine)()
+
 
 
 import pandas as pd
@@ -67,7 +69,7 @@ def process_excel_and_save(file):
 
 
 def create_product(data):
-    session = SessionLocal()
+    session = get_session()
     try:
         nombre = data.get('nombre')
         precio = data.get('precio_unitario')
@@ -105,7 +107,7 @@ def create_product(data):
 
 
 def list_products(product_id=None):
-    session = SessionLocal()
+    session = get_session()
     try:
         if product_id:
             # Fetch a specific product by ID
@@ -142,7 +144,7 @@ def list_products(product_id=None):
 
 
 def update_product(producto_id, data):
-    session = SessionLocal()
+    session = get_session()
     try:
         product = session.query(Product).get(producto_id)
         if not product:
@@ -174,7 +176,7 @@ def update_product(producto_id, data):
 
         
 def delete_product(producto_id):
-    session = SessionLocal()
+    session = get_session()
     try:
         product = session.query(Product).get(producto_id)
         if not product:
