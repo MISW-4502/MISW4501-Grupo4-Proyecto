@@ -1,8 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.services.auth_service import login_user, generate_token
-from src.services.auth_service import register_user
-from src.services.auth_service import initiate_password_reset
-from src.services.auth_service import reset_password_by_token
+from src.services.auth_service import login_user, generate_token,register_user,initiate_password_reset,reset_password_by_token
+from src.services.auth_service import check_user_exists
 from jwt import ExpiredSignatureError, InvalidTokenError
 import jwt
 from src.config.config import Config
@@ -89,4 +87,11 @@ def reset_password():
         return jsonify({"error": "token en la URL y nueva contraseña en el body son requeridos"}), 400
 
     result, status = reset_password_by_token(token, new_password)
+    return jsonify(result), status
+
+
+@auth_bp.route('/exists/<int:user_id>', methods=['GET'])
+def check_user(user_id):
+    ip = request.remote_addr
+    result, status = check_user_exists(user_id,ip)
     return jsonify(result), status

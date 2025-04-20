@@ -125,6 +125,52 @@ services:
       networks:
         - backend_net
 
+  sales-service:
+      build: ./sales
+      container_name: sales-service
+      ports:
+        - "3500:3500"
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_USER: admin
+        RABBITMQ_PASS: admin
+        QUEUE_NAME: order_queue
+        DB_HOST: 34.135.147.249     
+        DB_PORT: 5432
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgres123
+      depends_on:
+        - rabbitmq
+      networks:
+        - backend_net
+      
+      labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sales.rule=PathPrefix(`/sales`)"
+      - "traefik.http.services.sales.loadbalancer.server.port=3500"
+
+
+  order-worker:
+      build: ./order-worker
+      container_name: order-worker
+      ports:
+        - "3501:3501"
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_USER: admin
+        RABBITMQ_PASS: admin
+        QUEUE_NAME: order_queue
+        DB_HOST: 34.135.147.249     
+        DB_PORT: 5432
+        DB_NAME: postgres
+        DB_USER: postgres
+        DB_PASSWORD: postgres123
+      depends_on:
+        - rabbitmq
+      networks:
+        - backend_net
+
   manufacturer-service:
     build: ./manufacturer
     container_name: manufacturer-service

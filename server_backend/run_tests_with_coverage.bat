@@ -36,3 +36,13 @@ cd ..
 echo.
 echo ✅ Todas las pruebas fueron ejecutadas con reporte de cobertura.
 
+:: SALES
+echo.
+echo == Sales ==
+cd sales
+set PYTHONPATH=src
+pytest --cov=src --cov-report=html:htmlcov_inventary --cov-report=term test
+cd ..
+
+echo.
+echo ✅ Todas las pruebas fueron ejecutadas con reporte de cobertura.
