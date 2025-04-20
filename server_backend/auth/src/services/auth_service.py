@@ -118,3 +118,19 @@ def reset_password_by_token(token, new_password):
         return {"message": "Contraseña actualizada con éxito"}, 200
     finally:
         session.close()
+
+
+def check_user_exists(user_id,ip):
+
+    if is_ip_blocked(ip):
+        return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
+    
+    session = get_session()
+    try:
+        user = session.query(Usuario).filter_by(usuario_id=user_id).first()
+        if user:
+            return ({"exists": True, "rol": user.rol}), 200
+        else:
+            return ({"exists": False}), 404
+    finally:
+        session.close()
