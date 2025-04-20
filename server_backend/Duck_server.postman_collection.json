@@ -25,13 +25,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/register",
+							"raw": "http://localhost/auth/register",
 							"protocol": "http",
 							"host": [
-								"34",
-								"55",
-								"129",
-								"65"
+								"localhost"
 							],
 							"path": [
 								"auth",
@@ -47,17 +44,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/auth/ping",
+							"raw": "http://localhost/auth/exists/1",
 							"protocol": "http",
 							"host": [
-								"34",
-								"55",
-								"129",
-								"65"
+								"localhost"
 							],
 							"path": [
 								"auth",
-								"ping"
+								"exists",
+								"1"
 							]
 						}
 					},
@@ -70,7 +65,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"user@4example.com\",\r\n  \"password\": \"7654321\"\r\n}",
+							"raw": "{\r\n  \"username\": \"user@4exasmple.com\",\r\n  \"password\": \"7654321\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -78,13 +73,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/login",
+							"raw": "http://localhost/auth/login",
 							"protocol": "http",
 							"host": [
-								"34",
-								"55",
-								"129",
-								"65"
+								"localhost"
 							],
 							"path": [
 								"auth",
@@ -316,6 +308,14 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		},
@@ -456,6 +456,198 @@
 								"inventary",
 								"products",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sales",
+			"item": [
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/sales/ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id_cliente\": 1,\r\n  \"id_vendedor\": 2,\r\n  \"detalles\": [\r\n    {\r\n      \"id_producto\": 5,\r\n      \"cantidad\": 2,\r\n      \"precio_unitario\": 15000.00\r\n    },\r\n    {\r\n      \"id_producto\": 6,\r\n      \"cantidad\": 1,\r\n      \"precio_unitario\": 8000.00\r\n    },\r\n    {\r\n      \"id_producto\": 2,\r\n      \"cantidad\": 10,\r\n      \"precio_unitario\": 8000.00\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/sales/sales",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/sales/sales",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/sales/sales/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Order",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id_vendedor\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/sales/sales/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Details Order",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"items\": [\r\n    { \"id_producto\": 1, \"cantidad\": 11, \"precio_unitario\": 5000.0 }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/sales/sales/4/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"4",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Elminate item Order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/sales/sales/4/items/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"4",
+								"items",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Elminate Order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/sales/sales/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"4"
 							]
 						}
 					},
