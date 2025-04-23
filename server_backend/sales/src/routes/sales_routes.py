@@ -7,7 +7,9 @@ from src.services.sales_service import (
     getOrders,
     editOrAddItemsOrder,
     eliminatedOrder,
-    eliminateItemOrder
+    eliminateItemOrder,
+    getOrdersByClientId,
+    getOrdersBySellerId
 )
 
 sales_bp = Blueprint('sales', __name__)
@@ -92,3 +94,19 @@ def delete_item(pedido_id, id_producto):
 def delete_order(pedido_id):
     result, status = eliminatedOrder(pedido_id)
     return jsonify(result), status
+
+
+@sales_bp.route('/sales/client/<int:id_cliente>', methods=['GET'])
+def get_orders_by_client(id_cliente):
+    pedidos = getOrdersByClientId(id_cliente)
+    if not pedidos:
+        return jsonify({"message": "No se encontraron pedidos para este cliente"}), 404
+    return jsonify(pedidos), 200
+
+
+@sales_bp.route('/sales/seller/<int:id_vendedor>', methods=['GET'])
+def get_orders_by_seller(id_vendedor):
+    pedidos = getOrdersBySellerId(id_vendedor)
+    if not pedidos:
+        return jsonify({"message": "No se encontraron pedidos para este vendedor"}), 404
+    return jsonify(pedidos), 200
