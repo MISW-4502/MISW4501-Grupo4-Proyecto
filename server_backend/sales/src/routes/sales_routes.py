@@ -38,16 +38,6 @@ def create_order():
         if not all(k in item for k in ("id_producto", "cantidad", "precio_unitario")):
             return jsonify({"error": f"Faltan campos en el detalle #{i + 1}"}), 400
 
-    # ✅ Verificar si el cliente existe
-    cliente_info = users_exists(data["id_cliente"])
-    if not cliente_info.get("exists"):
-        return jsonify({"error": f"El cliente con ID {data['id_cliente']} no existe"}), 404
-
-    if data.get("id_vendedor"):
-        vendedor_info = users_exists(data["id_vendedor"])
-        if not vendedor_info.get("exists"):
-            return jsonify({"error": f"El vendedor con ID {data['id_vendedor']} no existe"}), 404
-
     # ✅ Enviar a la cola RabbitMQ
     publish_order_to_queue(data)
 
