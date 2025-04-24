@@ -4,7 +4,7 @@ import jwt
 import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.models.user_model import Usuario
+from src.models.user_model import Usuario,RolEnum
 from src.config.config import Config
 from src.services.ipblock_service import is_ip_blocked, register_failed_attempt, reset_ip
 from src.models.password_reset_model import PasswordReset
@@ -38,7 +38,12 @@ def login_user(email, password, ip):
 
         reset_ip(ip)
         token = generate_token(user.email)
-        return {"token": token}, 200
+        return {
+                "token": token,
+                "id": user.usuario_id,
+                "rol": user.rol.value,
+                "nombre": user.nombre
+            }, 200
     finally:
         session.close()
 
@@ -116,6 +121,39 @@ def reset_password_by_token(token, new_password):
         session.commit()
 
         return {"message": "Contraseña actualizada con éxito"}, 200
+    finally:
+        session.close()
+
+
+def getAllClients(ip):
+    if is_ip_blocked(ip):
+        return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
+
+    session = get_session()
+    try:
+        # Consulta solo los usuarios con rol 'CLIENTE'
+        usuarios = session.query(
+            Usuario.usuario_id,
+            Usuario.rol,
+            Usuario.nombre,
+            Usuario.email
+        ).filter(Usuario.rol == RolEnum.CLIENTE).all()
+
+        if not usuarios:
+            return {"message": "No se encontraron usuarios con rol 'cliente'"}, 404
+
+        resultado = [
+            {
+                "usuario_id": u.usuario_id,
+                "rol": u.rol.value if hasattr(u.rol, "value") else u.rol,
+                "nombre": u.nombre,
+                "email": u.email
+            }
+            for u in usuarios
+        ]
+
+        return {resultado}, 200
+
     finally:
         session.close()
 
