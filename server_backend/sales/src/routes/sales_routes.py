@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src.services.sales_producer import publish_order_to_queue
 from src.services.sales_service import (
-    users_exists,
+    
     editOrder,
     getOrderById,
     getOrders,
