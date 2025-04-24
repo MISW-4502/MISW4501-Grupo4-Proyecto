@@ -152,7 +152,7 @@ def getAllClients(ip):
             for u in usuarios
         ]
 
-        return {resultado}, 200
+        return {"usuarios": resultado}, 200
 
     finally:
         session.close()
