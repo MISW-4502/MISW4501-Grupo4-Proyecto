@@ -14,17 +14,6 @@ def get_session():
     )
     return sessionmaker(bind=engine)()
 
-def users_exists(user_id):
-    auth_service_url = os.getenv("AUTH_SERVICE_URL", "http://auth-service:3200")
-    try:
-        response = requests.get(f"{auth_service_url}/auth/exists/{user_id}", timeout=3)
-        if response.status_code == 200:
-            return response.json()  # Devuelve dict con "exists" y "rol"
-        else:
-            return {"exists": False}
-    except requests.RequestException as e:
-        print(f"Error al consultar usuario {user_id}: {e}")
-        return {"exists": False}
 
 def getOrders():
     session = get_session()

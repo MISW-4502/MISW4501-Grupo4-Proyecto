@@ -6,7 +6,7 @@ from src.services.product_service import (
     delete_product,
     create_product
 )
-
+from src.utils.auth_utils import token_required_remote
 
 inventary_bp = Blueprint('invetary', __name__)
 
@@ -16,6 +16,7 @@ def ping():
 
 
 @inventary_bp.route('/upload-products', methods=['POST'])
+@token_required_remote
 def upload_products():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
@@ -32,6 +33,7 @@ def upload_products():
 
 
 @inventary_bp.route('/products', methods=['POST'])
+@token_required_remote
 def create_product_endpoint():
     data = request.get_json()
     result, error = create_product(data)
@@ -40,6 +42,7 @@ def create_product_endpoint():
     return jsonify(result), 201
 
 @inventary_bp.route('/products/<int:product_id>', methods=['GET'])
+@token_required_remote
 def get_product(product_id):
     try:
         result, error = list_products(product_id=product_id)
@@ -50,6 +53,7 @@ def get_product(product_id):
         return jsonify({'error': str(e)}), 500
 
 @inventary_bp.route('/products', methods=['GET'])
+@token_required_remote
 def get_all_products():
     try:
         result = list_products()
@@ -59,6 +63,7 @@ def get_all_products():
 
 
 @inventary_bp.route('/products/<int:product_id>', methods=['PUT'])
+@token_required_remote
 def edit_product(product_id):
     data = request.get_json()
     result, error = update_product(product_id, data)
@@ -68,6 +73,7 @@ def edit_product(product_id):
 
 
 @inventary_bp.route('/products/<int:product_id>', methods=['DELETE'])
+@token_required_remote
 def remove_product(product_id):
     success, error = delete_product(product_id)
     if not success:
