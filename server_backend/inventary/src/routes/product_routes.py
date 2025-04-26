@@ -56,10 +56,13 @@ def get_product(product_id):
 @token_required_remote
 def get_all_products():
     try:
-        result = list_products()
-        return jsonify(result), 200
+        data, error = list_products()
+        if error:
+            return jsonify({'error': error}), 404
+        return jsonify(data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 @inventary_bp.route('/products/<int:product_id>', methods=['PUT'])
