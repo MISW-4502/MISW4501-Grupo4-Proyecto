@@ -72,9 +72,6 @@ def editOrder(pedido_id, data):
             pedido.estado = data["estado"]
 
         if "id_vendedor" in data:
-            vendedor_info = users_exists(data["id_vendedor"])
-            if not vendedor_info.get("exists"):
-                return {"error": "Vendedor no encontrado"}, 404
             pedido.id_vendedor = data["id_vendedor"]
 
         session.commit()

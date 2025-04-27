@@ -8,6 +8,7 @@ class RolEnum(PyEnum):
     ADMIN = "ADMIN"
     CLIENTE = "CLIENTE"
     VENDEDOR = "VENDEDOR"
+    FABRICANTE = "FABRICANTE"
 
 class Usuario(Base):
     __tablename__ = 'usuario'  # Coincide con el nombre real de la tabla en la DB

@@ -11,8 +11,6 @@ from src.services.sales_service import (
     eliminatedOrder
 )
 
-
-
 class FakeDetalle:
     id_pedido = 1
     id_producto = 1
@@ -66,9 +64,7 @@ def test_eliminated_order_invalid_state(mock_session, fake_pedido):
 
 
 @patch("src.services.sales_service.get_session")
-@patch("src.services.sales_service.users_exists")
-def test_edit_order_success(mock_user_check, mock_session, fake_pedido):
-    mock_user_check.return_value = {"exists": True}
+def test_edit_order_success(mock_session, fake_pedido):
     mock_s = MagicMock()
     mock_s.query().filter_by().first.return_value = fake_pedido
     mock_session.return_value = mock_s
@@ -78,6 +74,7 @@ def test_edit_order_success(mock_user_check, mock_session, fake_pedido):
 
     assert status == 200
     assert "actualizado" in result["message"]
+
 
 
 
