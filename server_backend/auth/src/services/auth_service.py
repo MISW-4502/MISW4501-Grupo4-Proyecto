@@ -157,6 +157,38 @@ def getAllClients(ip):
     finally:
         session.close()
 
+def getAllSellers(ip):
+    if is_ip_blocked(ip):
+        return {"error": "IP bloqueada por múltiples intentos fallidos"}, 403
+
+    session = get_session()
+    try:
+        # Consulta solo los usuarios con rol 'CLIENTE'
+        usuarios = session.query(
+            Usuario.usuario_id,
+            Usuario.rol,
+            Usuario.nombre,
+            Usuario.email
+        ).filter(Usuario.rol == RolEnum.VENDEDOR).all()
+
+        if not usuarios:
+            return {"message": "No se encontraron usuarios con rol 'VENDEDOR'"}, 404
+
+        resultado = [
+            {
+                "usuario_id": u.usuario_id,
+                "rol": u.rol.value if hasattr(u.rol, "value") else u.rol,
+                "nombre": u.nombre,
+                "email": u.email
+            }
+            for u in usuarios
+        ]
+
+        return resultado, 200
+
+    finally:
+        session.close()
+
 
 def check_user_exists(user_id,ip):
 
