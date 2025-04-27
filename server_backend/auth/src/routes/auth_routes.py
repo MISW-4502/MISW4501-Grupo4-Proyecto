@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from src.services.auth_service import login_user, generate_token,register_user,initiate_password_reset,reset_password_by_token,getAllClients
+from src.services.auth_service import login_user, generate_token,register_user,initiate_password_reset,reset_password_by_token,getAllClients,getAllSellers
 from src.services.auth_service import check_user_exists
 from jwt import ExpiredSignatureError, InvalidTokenError
 import jwt
@@ -101,6 +101,14 @@ def getAllClient():
 
     ip = request.remote_addr
     result, status = getAllClients(ip)
+    return jsonify(result), status
+
+@auth_bp.route('/seller/all', methods=['GET'])
+@token_required
+def getAllseller():
+
+    ip = request.remote_addr
+    result, status = getAllSellers(ip)
     return jsonify(result), status
 
 
