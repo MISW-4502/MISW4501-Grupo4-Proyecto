@@ -1,6 +1,14 @@
+
+
 import pytest
 from unittest.mock import patch, MagicMock
-from services.truck_service import create_truck, edit_truck, delete_truck, list_trucks, get_truck_by_id
+from services.truck_service import (
+    create_truck,
+    edit_truck,
+    delete_truck,
+    list_trucks,
+    get_truck_by_id
+)
 
 @pytest.fixture
 def mock_session():
@@ -8,96 +16,187 @@ def mock_session():
     with patch("services.truck_service.get_session", return_value=mock):
         yield mock
 
-# ✅ Crear camión nuevo
+# 🚚 CREATE TRUCK
+@patch("services.truck_service.get_session")
+
 def test_create_truck_success(mock_session):
-    mock_session.query().filter_by().first.return_value = None  # No existe
+    mock_s = mock_session.return_value
+    mock_s.query().filter_by().first.return_value = None  # No existe el camión
+
     mock_truck = MagicMock()
     mock_truck.camion_id = 1
     mock_truck.placa = "ABC123"
-    mock_truck.capacidad = 20
-    mock_truck.tipo = "Tipo A"
+    mock_truck.capacidad = 10000
+    mock_truck.tipo = "tipo"
+    mock_truck.fecha_registro = None
+    mock_truck.rutas = "Ruta 1"
+
+    mock_s.refresh.return_value = None
+    mock_s.add.return_value = None
+
+    with patch("services.truck_service.Truck", return_value=mock_truck):
+        response, status = create_truck({
+            "placa": "ABC123",
+            "capacidad": 10000,
+            "tipo": "tipo",
+            "rutas": "Ruta 1"
+        })
+
+    assert status == 201
+    assert response["message"] == "Camión registrado"
+
+@patch("services.truck_service.get_session")
+
+def test_create_truck_duplicate(mock_session):
+    mock_s = mock_session.return_value
+    mock_s.query().filter_by().first.return_value = MagicMock()  # Camión ya existe
+
+    response, status = create_truck({
+        "placa": "ABC123",
+        "capacidad": 10000
+    })
+
+    assert status == 409
+    assert "error" in response
+
+# ✏️ EDIT TRUCK
+@patch("services.truck_service.get_session")
+def test_edit_truck_success(mock_session):
+    mock_s = mock_session.return_value
+
+    # Mock para el camión que se va a editar
+    mock_truck = MagicMock()
+    mock_truck.placa = "DEF456"
+    mock_truck.capacidad = 10000
+    mock_truck.tipo = "tipo"
+    mock_truck.rutas = "Ruta A"
+    mock_truck.fecha_registro = None
+
+    # Simula el flujo correcto:
+    # 1. Encuentra el camión a editar (mock_truck)
+    # 2. No encuentra duplicado (None)
+    mock_s.query().filter.return_value.first.side_effect = [mock_truck, None]
+
+    data = {"placa": "XYZ789", "capacidad": 15000}
+    response, status = edit_truck(data, 1)
+
+    assert status == 200
+    assert response["message"] == "Camión actualizado"
+
+
+@patch("services.truck_service.get_session")
+
+def test_edit_truck_not_found(mock_session):
+    mock_s = mock_session.return_value
+    mock_s.query().filter.return_value.first.return_value = None
+
+    response, status = edit_truck({"placa": "XYZ789"}, 99)
+
+    assert status == 404
+    assert "error" in response
+
+@patch("services.truck_service.get_session")
+
+def test_edit_truck_duplicate_plate(mock_session):
+    mock_s = mock_session.return_value
+
+    existing_truck = MagicMock()
+    truck_to_edit = MagicMock()
+    truck_to_edit.placa = "OLD123"
+
+    # Simula encontrar el camión a editar
+    mock_s.query().filter.return_value.first.side_effect = [truck_to_edit, existing_truck]
+
+    data = {"placa": "DUPLICATE123"}
+
+    response, status = edit_truck(data, 1)
+
+    assert status == 409
+    assert "error" in response
+
+# 🗑️ DELETE TRUCK
+@patch("services.truck_service.get_session")
+
+def test_delete_truck_success(mock_session):
+    mock_s = mock_session.return_value
+    mock_truck = MagicMock()
+
+    mock_s.query().filter.return_value.first.return_value = mock_truck
+
+    response, status = delete_truck(1)
+
+    assert status == 200
+    assert response["message"] == "Camión eliminado exitosamente"
+
+@patch("services.truck_service.get_session")
+
+def test_delete_truck_not_found(mock_session):
+    mock_s = mock_session.return_value
+    mock_s.query().filter.return_value.first.return_value = None
+
+    response, status = delete_truck(999)
+
+    assert status == 404
+    assert "error" in response
+
+# 📄 LIST TRUCKS
+@patch("services.truck_service.get_session")
+
+def test_list_trucks_success(mock_session):
+    mock_s = mock_session.return_value
+    mock_truck = MagicMock()
+    mock_truck.camion_id = 1
+    mock_truck.placa = "AAA111"
+    mock_truck.capacidad = 5000
+    mock_truck.tipo = "tipo"
     mock_truck.fecha_registro = None
     mock_truck.rutas = "Ruta X"
 
-    mock_session.refresh.side_effect = lambda x: x
+    mock_s.query().all.return_value = [mock_truck]
 
-    with patch("services.truck_service.Truck", return_value=mock_truck):
-        result, code = create_truck({
-            "placa": "ABC123",
-            "capacidad": 20,
-            "tipo": "Tipo A",
-            "rutas": "Ruta X"
-        })
-        assert code == 201
-        assert result["camion"]["placa"] == "ABC123"
+    response, status = list_trucks()
 
-# ❌ Crear camión duplicado
-def test_create_truck_duplicate(mock_session):
-    mock_session.query().filter_by().first.return_value = True
-    result, code = create_truck({
-        "placa": "ABC123",
-        "capacidad": 20
-    })
-    assert code == 409
-    assert "Ya existe un camión" in result["error"]
+    assert status == 200
+    assert isinstance(response["camiones"], list)
+    assert response["camiones"][0]["placa"] == "AAA111"
 
-# ✅ Editar camión exitosamente
+@patch("services.truck_service.get_session")
 
-def test_edit_truck_success(mock_session):
-    truck = MagicMock()
-    truck.camion_id = 1
-    truck.placa = "ABC123"
-    truck.capacidad = 10
-    truck.tipo = "tipo"
-    truck.fecha_registro = None
-    truck.rutas = "Ruta1"
+def test_list_trucks_error(mock_session):
+    mock_s = mock_session.return_value
+    mock_s.query().all.side_effect = Exception("error inesperado")
 
-    # 👉 Primer filter() es el truck a editar, segundo filter() verifica si ya existe otra placa (debe ser None)
-    mock_session.query().filter().first.side_effect = [truck, None]
+    response, status = list_trucks()
 
-    result, code = edit_truck({
-        "placa": "DEF456",
-        "capacidad": 30
-    }, 1)
+    assert status == 500
+    assert "error" in response
 
-    assert code == 200
-    assert result["camion"]["placa"] == "DEF456"
+# 🔍 GET TRUCK BY ID
+@patch("services.truck_service.get_session")
 
-
-
-# ❌ Eliminar camión no existente
-def test_delete_truck_not_found(mock_session):
-    mock_session.query().filter().first.return_value = None
-    result, code = delete_truck(99)
-    assert code == 404
-    assert "no encontrado" in result["error"]
-
-# ✅ Listar camiones
-def test_list_trucks_success(mock_session):
-    truck = MagicMock()
-    truck.camion_id = 1
-    truck.placa = "AAA111"
-    truck.capacidad = 40
-    truck.tipo = "Frigorífico"
-    truck.fecha_registro = None
-    truck.rutas = "Norte"
-
-    mock_session.query().all.return_value = [truck]
-    result, code = list_trucks()
-    assert code == 200
-    assert len(result["camiones"]) == 1
-
-# ✅ Obtener camión por ID existente
 def test_get_truck_by_id_success(mock_session):
-    truck = MagicMock()
-    truck.camion_id = 1
-    truck.placa = "ZZZ999"
-    truck.capacidad = 10
-    truck.tipo = "Pequeño"
-    truck.fecha_registro = None
-    truck.rutas = "Sur"
+    mock_s = mock_session.return_value
+    mock_truck = MagicMock()
+    mock_truck.camion_id = 1
+    mock_truck.placa = "ZZZ999"
+    mock_truck.capacidad = 7500
+    mock_truck.tipo = "tipo"
+    mock_truck.fecha_registro = None
+    mock_truck.rutas = "Ruta Final"
 
-    mock_session.query().filter().first.return_value = truck
-    result, code = get_truck_by_id(1)
-    assert code == 200
-    assert result["placa"] == "ZZZ999"
+    mock_s.query().filter.return_value.first.return_value = mock_truck
+
+    response, status = get_truck_by_id(1)
+
+    assert status == 200
+    assert response["placa"] == "ZZZ999"
+
+@patch("services.truck_service.get_session")
+def test_get_truck_by_id_not_found(mock_session):
+    mock_s = mock_session.return_value
+    mock_s.query().filter.return_value.first.return_value = None
+
+    response, status = get_truck_by_id(12345)
+
+    assert status == 404
+    assert "error" in response

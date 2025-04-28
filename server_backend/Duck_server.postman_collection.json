@@ -25,10 +25,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/register",
+							"raw": "http://34.55.129.65/auth/register",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -44,10 +47,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/auth/exists/1",
+							"raw": "http://34.55.129.65/auth/exists/1",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -73,10 +79,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/auth/login",
+							"raw": "http://34.55.129.65/auth/login",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"auth",
@@ -308,14 +317,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "New Request",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
 				}
 			]
 		},
@@ -472,10 +473,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/sales/ping",
+							"raw": "http://34.55.129.65/sales/ping",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
@@ -500,10 +504,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/sales/sales",
+							"raw": "http://34.55.129.65/sales/sales",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
@@ -519,10 +526,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/sales/sales",
+							"raw": "http://34.55.129.65/sales/sales",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
@@ -538,15 +548,66 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/sales/sales/4",
+							"raw": "http://34.55.129.65/sales/sales/6",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
 								"sales",
-								"4"
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Order by client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://34.55.129.65/sales/sales/client/1",
+							"protocol": "http",
+							"host": [
+								"34",
+								"55",
+								"129",
+								"65"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"client",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Order by Seller",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://34.55.129.65/sales/sales/seller/2",
+							"protocol": "http",
+							"host": [
+								"34",
+								"55",
+								"129",
+								"65"
+							],
+							"path": [
+								"sales",
+								"sales",
+								"seller",
+								"2"
 							]
 						}
 					},
@@ -567,15 +628,18 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/sales/sales/1",
+							"raw": "http://34.55.129.65/sales/sales/6",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
 								"sales",
-								"1"
+								"6"
 							]
 						}
 					},
@@ -596,15 +660,18 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/sales/sales/4/items",
+							"raw": "http://34.55.129.65/sales/sales/6/items",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
 								"sales",
-								"4",
+								"6",
 								"items"
 							]
 						}
@@ -617,15 +684,18 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/sales/sales/4/items/1",
+							"raw": "http://34.55.129.65/sales/sales/6/items/1",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
 								"sales",
-								"4",
+								"6",
 								"items",
 								"1"
 							]
@@ -639,15 +709,18 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost/sales/sales/4",
+							"raw": "http://34.55.129.65/sales/sales/6",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"34",
+								"55",
+								"129",
+								"65"
 							],
 							"path": [
 								"sales",
 								"sales",
-								"4"
+								"6"
 							]
 						}
 					},

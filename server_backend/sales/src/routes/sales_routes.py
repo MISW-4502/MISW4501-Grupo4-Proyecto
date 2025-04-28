@@ -1,13 +1,15 @@
 from flask import Blueprint, request, jsonify
 from src.services.sales_producer import publish_order_to_queue
 from src.services.sales_service import (
-    users_exists,
+    
     editOrder,
     getOrderById,
     getOrders,
     editOrAddItemsOrder,
     eliminatedOrder,
-    eliminateItemOrder
+    eliminateItemOrder,
+    getOrdersByClientId,
+    getOrdersBySellerId
 )
 
 sales_bp = Blueprint('sales', __name__)
@@ -35,16 +37,6 @@ def create_order():
     for i, item in enumerate(data["detalles"]):
         if not all(k in item for k in ("id_producto", "cantidad", "precio_unitario")):
             return jsonify({"error": f"Faltan campos en el detalle #{i + 1}"}), 400
-
-    # ✅ Verificar si el cliente existe
-    cliente_info = users_exists(data["id_cliente"])
-    if not cliente_info.get("exists"):
-        return jsonify({"error": f"El cliente con ID {data['id_cliente']} no existe"}), 404
-
-    if data.get("id_vendedor"):
-        vendedor_info = users_exists(data["id_vendedor"])
-        if not vendedor_info.get("exists"):
-            return jsonify({"error": f"El vendedor con ID {data['id_vendedor']} no existe"}), 404
 
     # ✅ Enviar a la cola RabbitMQ
     publish_order_to_queue(data)
@@ -92,3 +84,19 @@ def delete_item(pedido_id, id_producto):
 def delete_order(pedido_id):
     result, status = eliminatedOrder(pedido_id)
     return jsonify(result), status
+
+
+@sales_bp.route('/sales/client/<int:id_cliente>', methods=['GET'])
+def get_orders_by_client(id_cliente):
+    pedidos = getOrdersByClientId(id_cliente)
+    if not pedidos:
+        return jsonify({"message": "No se encontraron pedidos para este cliente"}), 404
+    return jsonify(pedidos), 200
+
+
+@sales_bp.route('/sales/seller/<int:id_vendedor>', methods=['GET'])
+def get_orders_by_seller(id_vendedor):
+    pedidos = getOrdersBySellerId(id_vendedor)
+    if not pedidos:
+        return jsonify({"message": "No se encontraron pedidos para este vendedor"}), 404
+    return jsonify(pedidos), 200

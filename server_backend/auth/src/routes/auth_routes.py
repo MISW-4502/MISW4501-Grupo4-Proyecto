@@ -1,9 +1,12 @@
 from flask import Blueprint, request, jsonify
-from src.services.auth_service import login_user, generate_token,register_user,initiate_password_reset,reset_password_by_token
+from src.services.auth_service import login_user, generate_token,register_user,initiate_password_reset,reset_password_by_token,getAllClients,getAllSellers,getAllmanufacturers
 from src.services.auth_service import check_user_exists
 from jwt import ExpiredSignatureError, InvalidTokenError
 import jwt
 from src.config.config import Config
+from src.models.user_model import RolEnum
+from src.utils.jwt_utils import token_required
+
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -39,6 +42,9 @@ def register():
 
     if not all([email, nombre,rol, password]):
         return {"error": "Faltan campos requeridos"}, 400
+    
+    if rol not in RolEnum._value2member_map_:
+        return {"error": f"Rol '{rol}' no es válido. Opciones válidas: {[r.value for r in RolEnum]}"}, 400
 
     result, status = register_user(email, nombre, rol, password, ip)
     return result, status
@@ -89,8 +95,34 @@ def reset_password():
     result, status = reset_password_by_token(token, new_password)
     return jsonify(result), status
 
+@auth_bp.route('/clients/all', methods=['GET'])
+@token_required
+def getAllClient():
+
+    ip = request.remote_addr
+    result, status = getAllClients(ip)
+    return jsonify(result), status
+
+@auth_bp.route('/seller/all', methods=['GET'])
+@token_required
+def getAllseller():
+
+    ip = request.remote_addr
+    result, status = getAllSellers(ip)
+    return jsonify(result), status
+
+@auth_bp.route('/manufacturers/all', methods=['GET'])
+@token_required
+def getAllmanufacturer():
+
+    ip = request.remote_addr
+    result, status = getAllmanufacturers(ip)
+    return jsonify(result), status
+
+
 
 @auth_bp.route('/exists/<int:user_id>', methods=['GET'])
+@token_required
 def check_user(user_id):
     ip = request.remote_addr
     result, status = check_user_exists(user_id,ip)

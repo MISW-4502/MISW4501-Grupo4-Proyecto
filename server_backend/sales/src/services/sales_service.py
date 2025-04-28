@@ -14,17 +14,6 @@ def get_session():
     )
     return sessionmaker(bind=engine)()
 
-def users_exists(user_id):
-    auth_service_url = os.getenv("AUTH_SERVICE_URL", "http://auth-service:3200")
-    try:
-        response = requests.get(f"{auth_service_url}/auth/exists/{user_id}", timeout=3)
-        if response.status_code == 200:
-            return response.json()  # Devuelve dict con "exists" y "rol"
-        else:
-            return {"exists": False}
-    except requests.RequestException as e:
-        print(f"Error al consultar usuario {user_id}: {e}")
-        return {"exists": False}
 
 def getOrders():
     session = get_session()
@@ -83,9 +72,6 @@ def editOrder(pedido_id, data):
             pedido.estado = data["estado"]
 
         if "id_vendedor" in data:
-            vendedor_info = users_exists(data["id_vendedor"])
-            if not vendedor_info.get("exists"):
-                return {"error": "Vendedor no encontrado"}, 404
             pedido.id_vendedor = data["id_vendedor"]
 
         session.commit()
@@ -203,5 +189,65 @@ def eliminatedOrder(pedido_id):
         session.commit()
 
         return {"message": "Pedido eliminado correctamente"}, 200
+    finally:
+        session.close()
+
+
+def getOrdersByClientId(id_cliente):
+    session = get_session()
+    try:
+        pedidos = session.query(Pedido).filter_by(id_cliente=id_cliente).all()
+        if not pedidos:
+            return []
+
+        return [
+            {
+                "pedido_id": p.pedido_id,
+                "id_cliente": p.id_cliente,
+                "id_vendedor": p.id_vendedor,
+                "fecha_creacion": p.fecha_creacion.isoformat(),
+                "estado": p.estado,
+                "total": float(p.total),
+                "detalles": [
+                    {
+                        "id_producto": d.id_producto,
+                        "cantidad": d.cantidad,
+                        "precio_unitario": float(d.precio_unitario),
+                        "subtotal": float(d.subtotal)
+                    } for d in p.detalles
+                ]
+            }
+            for p in pedidos
+        ]
+    finally:
+        session.close()
+
+
+def getOrdersBySellerId(id_vendedor):
+    session = get_session()
+    try:
+        pedidos = session.query(Pedido).filter_by(id_vendedor=id_vendedor).all()
+        if not pedidos:
+            return []
+
+        return [
+            {
+                "pedido_id": p.pedido_id,
+                "id_cliente": p.id_cliente,
+                "id_vendedor": p.id_vendedor,
+                "fecha_creacion": p.fecha_creacion.isoformat(),
+                "estado": p.estado,
+                "total": float(p.total),
+                "detalles": [
+                    {
+                        "id_producto": d.id_producto,
+                        "cantidad": d.cantidad,
+                        "precio_unitario": float(d.precio_unitario),
+                        "subtotal": float(d.subtotal)
+                    } for d in p.detalles
+                ]
+            }
+            for p in pedidos
+        ]
     finally:
         session.close()
