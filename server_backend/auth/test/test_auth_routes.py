@@ -17,8 +17,7 @@ def test_login_success(mock_session):
 
     with patch("services.auth_service.check_password", return_value=True), \
          patch("services.auth_service.is_ip_blocked", return_value=False), \
-         patch("services.auth_service.reset_ip"), \
-         patch("services.auth_service.generate_token", return_value="token123"):
+
 
         data, status = login_user("user@test.com", "pass", "127.0.0.1")
         assert status == 200
