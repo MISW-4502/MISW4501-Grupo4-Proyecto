@@ -4,45 +4,39 @@ on:
   push:
     branches:
       - test_branch 
-
 jobs:
-  build-and-deploy:
+  test-all:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service: [auth, truck, manufacturer, inventary, sales]
+
     steps:
-      - name: 🛒 Checkout repositorio
-        uses: actions/checkout@v4
+    - name: 📥 Checkout código
+      uses: actions/checkout@v3
 
-      - name: 🐍 Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'  # o el que uses en tu backend
+    - name: 🐍 Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
-      - name: 📦 Instalar dependencias
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: 📦 Instalar dependencias
+      run: |
+        cd ${{ matrix.service }}
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
 
-      - name: 🧪 Ejecutar tests
-        run: |
-          pytest --maxfail=1 --disable-warnings --tb=short
+    - name: 🧪 Ejecutar tests con coverage
+      run: |
+        cd ${{ matrix.service }}
+        export PYTHONPATH=src
+        pytest --cov=src --cov-report=term
 
-      - name: 📂 Copiar proyecto al servidor vía SSH
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "."
-          target: "/home/${{ secrets.SERVER_USER }}/server_backend"
-
-      - name: 🚀 Conectarse por SSH y desplegar
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /home/${{ secrets.SERVER_USER }}/server_backend
-            docker-compose pull
-            docker-compose up -d --build
+    - name: 📤 Subir reportes como artefactos (opcional)
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-${{ matrix.service }}
+        path: ${{ matrix.service }}/.coverage*
