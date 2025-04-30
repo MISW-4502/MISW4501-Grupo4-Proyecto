@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "b9160147-31b0-4e80-9061-d4ff9148502c",
+		"_postman_id": "b7a68b59-9613-4f54-b44a-9915e9532901",
 		"name": "Duck_server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "14512119",
-		"_collection_link": "https://lively-crescent-505153.postman.co/workspace/hola~b175e01f-6944-4213-b93a-76eb46d7d094/collection/14512119-b9160147-31b0-4e80-9061-d4ff9148502c?action=share&source=collection_link&creator=14512119"
+		"_collection_link": "https://lively-crescent-505153.postman.co/workspace/hola~b175e01f-6944-4213-b93a-76eb46d7d094/collection/14512119-b7a68b59-9613-4f54-b44a-9915e9532901?action=share&source=collection_link&creator=14512119"
 	},
 	"item": [
 		{
@@ -17,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"user@4example.com\",\r\n  \"nombre\": \"Nombre Apellido\",\r\n  \"password\": \"12345678\"\r\n}\r\n",
+							"raw": "{\r\n  \"email\": \"javier@7example.com\",\r\n  \"nombre\": \"javier andres\",\r\n  \"password\": \"12345678\",\r\n  \"rol\" : \"CLIENTE\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -25,7 +25,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/register",
+							"raw": "http://34.55.129.65:3000/auth/register",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -33,6 +33,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
 								"register"
@@ -47,7 +48,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/auth/exists/1",
+							"raw": "http://34.55.129.65:3000/auth/ping",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -55,10 +56,10 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
-								"exists",
-								"1"
+								"ping"
 							]
 						}
 					},
@@ -71,7 +72,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"user@4exasmple.com\",\r\n  \"password\": \"7654321\"\r\n}",
+							"raw": "{\r\n  \"username\": \"javier@4example.com\",\r\n  \"password\": \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -79,7 +80,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/login",
+							"raw": "http://34.55.129.65:3000/auth/login",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -87,6 +88,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
 								"login"
@@ -102,7 +104,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQDRleGFtcGxlLmNvbSIsImV4cCI6MTc0Mzk4MjE0MH0.F8tnWcxYLXRYlNhLqQx19ToOrs5jLl8rC_4qXEgaTvk\"\r\n}",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0NTg5fQ.x9PZ-_ERkKTGbZ0J6ieJr5GLV6PWbUCbHuWUzjdwj_4\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -110,7 +112,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/validate",
+							"raw": "http://34.55.129.65:3000/auth/validate",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -118,6 +120,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
 								"validate"
@@ -141,7 +144,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/recover",
+							"raw": "http://34.55.129.65:3000/auth/recover",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -149,6 +152,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
 								"recover"
@@ -172,7 +176,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/auth/reset-password?token=a1aa7cda-9b16-4d39-84eb-a966f3d62389",
+							"raw": "http://34.55.129.65:3000/auth/reset-password?token=a065e8de-1ac8-4001-9cb4-c4a1d612e2bb",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -180,6 +184,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"auth",
 								"reset-password"
@@ -187,8 +192,42 @@
 							"query": [
 								{
 									"key": "token",
-									"value": "a1aa7cda-9b16-4d39-84eb-a966f3d62389"
+									"value": "a065e8de-1ac8-4001-9cb4-c4a1d612e2bb"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Clients",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0NzMzfQ._bID3ADWyfA8CyhwL2Egp8RWfL_w7VSPctuslkf2oj4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://34.55.129.65:3000/auth/clients/all",
+							"protocol": "http",
+							"host": [
+								"34",
+								"55",
+								"129",
+								"65"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"clients",
+								"all"
 							]
 						}
 					},
@@ -200,12 +239,152 @@
 			"name": "Truck",
 			"item": [
 				{
+					"name": "Visits",
+					"item": [
+						{
+							"name": "Create Visits",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0NzMzfQ._bID3ADWyfA8CyhwL2Egp8RWfL_w7VSPctuslkf2oj4",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id_vendedor\": 3,\r\n  \"id_cliente\": 5,\r\n  \"fecha_visita\": \"2025-05-01T14:00:00\",\r\n  \"estado\": \"PENDIENTE\",\r\n  \"descripcion\": \"Primera tercera  de presentación\",\r\n  \"direccion\": \"Calle 3 #45-67, Bogotá\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://34.55.129.65:3000/truck/visits",
+									"protocol": "http",
+									"host": [
+										"34",
+										"55",
+										"129",
+										"65"
+									],
+									"port": "3000",
+									"path": [
+										"truck",
+										"visits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get By id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id_vendedor\": 1,\r\n  \"id_cliente\": 5,\r\n  \"fecha_visita\": \"2025-05-01T14:00:00\",\r\n  \"estado\": \"PENDIENTE\",\r\n  \"descripcion\": \"Primera tercera  de presentación\",\r\n  \"direccion\": \"Calle 3 #45-67, Bogotá\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://34.55.129.65:3000/truck/visits/1",
+									"protocol": "http",
+									"host": [
+										"34",
+										"55",
+										"129",
+										"65"
+									],
+									"port": "3000",
+									"path": [
+										"truck",
+										"visits",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get By id Copy",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id_vendedor\": 1,\r\n  \"id_cliente\": 5,\r\n  \"fecha_visita\": \"2025-05-01T14:00:00\",\r\n  \"estado\": \"PENDIENTE\",\r\n  \"descripcion\": \"Primera tercera  de presentación\",\r\n  \"direccion\": \"Calle 3 #45-67, Bogotá\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://34.55.129.65:3000/truck/visits/seller/1",
+									"protocol": "http",
+									"host": [
+										"34",
+										"55",
+										"129",
+										"65"
+									],
+									"port": "3000",
+									"path": [
+										"truck",
+										"visits",
+										"seller",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "HealthCheck",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/truck/ping",
+							"raw": "http://34.55.129.65:3000/truck/ping",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -213,6 +392,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"truck",
 								"ping"
@@ -224,11 +404,21 @@
 				{
 					"name": "Create-trucks",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDM4MjQ5fQ.eoGk3VpgKVhLEtvSTgvxfDv_ml8n2xNUeKMHM7lm6ao",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"placa\": \"DEF454\",\r\n  \"capacidad\": 4500.00,\r\n  \"tipo\": \"Refrigerado\",\r\n  \"rutas\": \"Bogotá - Medellín\"\r\n}\r\n",
+							"raw": "{\r\n  \"placa\": \"DEF4e54\",\r\n  \"capacidad\": 4500.00,\r\n  \"tipo\": \"Refrigerado\",\r\n  \"rutas\": \"Bogotá - Medellín\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -236,7 +426,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/truck/trucks",
+							"raw": "http://34.55.129.65:3000/truck/trucks",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -244,6 +434,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"truck",
 								"trucks"
@@ -255,6 +446,16 @@
 				{
 					"name": "Edit Trucks",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -267,7 +468,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/truck/trucks/1",
+							"raw": "http://34.55.129.65:3000/truck/trucks/1",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -275,6 +476,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"truck",
 								"trucks",
@@ -290,6 +492,16 @@
 						"disableBodyPruning": true
 					},
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -302,7 +514,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/truck/trucks",
+							"raw": "http://34.55.129.65:3000/truck/trucks",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -310,6 +522,52 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
+							"path": [
+								"truck",
+								"trucks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Trucks Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://34.55.129.65:3000/truck/trucks",
+							"protocol": "http",
+							"host": [
+								"34",
+								"55",
+								"129",
+								"65"
+							],
+							"port": "3000",
 							"path": [
 								"truck",
 								"trucks"
@@ -326,6 +584,16 @@
 				{
 					"name": "create_bulk",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -334,12 +602,12 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/C:/Users/andre/Downloads/test_bulk.xlsx"
+									"src": "/C:/Users/andre/Downloads/plantilla_carga_masiva_productos.xlsx"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://34.55.129.65/inventary/upload-products",
+							"raw": "http://34.55.129.65:3000/inventary/upload-products",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -347,6 +615,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"inventary",
 								"upload-products"
@@ -358,6 +627,16 @@
 				{
 					"name": "create",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -370,7 +649,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/inventary/products",
+							"raw": "http://34.55.129.65:3000/inventary/products",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -378,6 +657,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"inventary",
 								"products"
@@ -392,7 +672,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/inventary/ping",
+							"raw": "http://34.55.129.65:3000/inventary/ping",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -400,6 +680,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"inventary",
 								"ping"
@@ -411,10 +692,20 @@
 				{
 					"name": "List Products",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/inventary/products",
+							"raw": "http://34.55.129.65:3000/auth/seller/all",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -422,9 +713,11 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
-								"inventary",
-								"products"
+								"auth",
+								"seller",
+								"all"
 							]
 						}
 					},
@@ -433,6 +726,16 @@
 				{
 					"name": "Edit Products",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -445,7 +748,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/inventary/products/1",
+							"raw": "http://34.55.129.65:3000/inventary/products/1",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -453,6 +756,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"inventary",
 								"products",
@@ -473,7 +777,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/ping",
+							"raw": "http://34.55.129.65:3000/sales/ping",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -481,6 +785,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"ping"
@@ -492,6 +797,16 @@
 				{
 					"name": "New Order",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXZpZXJANGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ2MDQ0Nzk3fQ.2S2u6J4deIsIThAYjbP7pKI3-n222CeokgsY0CNOUuI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -504,7 +819,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales",
+							"raw": "http://34.55.129.65:3000/sales/sales",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -512,6 +827,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales"
@@ -526,7 +842,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales",
+							"raw": "http://34.55.129.65:3000/sales/sales",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -534,6 +850,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales"
@@ -548,7 +865,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/6",
+							"raw": "http://34.55.129.65:3000/sales/sales/8",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -556,10 +873,11 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
-								"6"
+								"8"
 							]
 						}
 					},
@@ -571,7 +889,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/client/1",
+							"raw": "http://34.55.129.65:3000/sales/sales/client/1",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -579,6 +897,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
@@ -595,7 +914,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/seller/2",
+							"raw": "http://34.55.129.65:3000/sales/sales/seller/2",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -603,6 +922,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
@@ -628,7 +948,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/6",
+							"raw": "http://34.55.129.65:3000/sales/sales/8",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -636,10 +956,11 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
-								"6"
+								"8"
 							]
 						}
 					},
@@ -660,7 +981,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/6/items",
+							"raw": "http://34.55.129.65:3000/sales/sales/8/items",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -668,10 +989,11 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
-								"6",
+								"8",
 								"items"
 							]
 						}
@@ -684,7 +1006,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/6/items/1",
+							"raw": "http://34.55.129.65:3000/sales/sales/6/items/1",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -692,6 +1014,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
@@ -709,7 +1032,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://34.55.129.65/sales/sales/6",
+							"raw": "http://34.55.129.65:3000/sales/sales/6",
 							"protocol": "http",
 							"host": [
 								"34",
@@ -717,6 +1040,7 @@
 								"129",
 								"65"
 							],
+							"port": "3000",
 							"path": [
 								"sales",
 								"sales",
