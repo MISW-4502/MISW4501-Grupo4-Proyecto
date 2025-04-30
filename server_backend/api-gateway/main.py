@@ -20,8 +20,6 @@ SERVICE_PREFIXES = {
     'auth': 'auth',
     'sales': 'sales',
     'truck': 'truck',
-    'product-worker': '',
-    'order-worker': '',
     'manufacturer': 'manufacturer',
     'inventary': 'inventary',
 }
