@@ -1,17 +1,16 @@
-# Imagen base de Python
 FROM python:3.11-slim
 
-# Directorio de trabajo dentro del contenedor
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar todos los archivos al contenedor
+# Copia los archivos del API Gateway al contenedor
 COPY . .
 
-# Instalar dependencias
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala las dependencias, incluyendo gunicorn
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-# Puerto expuesto por el API Gateway
+# Expone el puerto 3000 para que pueda recibir peticiones externas
 EXPOSE 3000
 
-# Comando para ejecutar la app
-CMD ["python", "main.py"]
+# Ejecuta el servidor Gunicorn en modo producción
+CMD ["gunicorn", "main:app", "-b", "0.0.0.0:3000", "--workers=4"]

@@ -4,4 +4,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 3401
-CMD ["python", "main.py"]
+CMD ["gunicorn", "main:app", "-b", "0.0.0.0:3401", "--workers=4"]
