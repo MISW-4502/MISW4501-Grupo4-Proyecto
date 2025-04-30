@@ -56,7 +56,7 @@ jobs:
 
     - name: 🚀 Desplegar en el servidor Ubuntu (GCP)
       run: |
-        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << "EOF"
           cd ~/MISW4501-Grupo4-Proyecto/server_backend/
           git pull
           docker-compose down
