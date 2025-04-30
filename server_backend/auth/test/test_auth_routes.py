@@ -54,7 +54,7 @@ def test_reset_password_by_token_success(mock_session):
     
     mock_user = MagicMock()
 
-    
+    mock_session.query().filter_by().first.side_effect = [mock_reset, mock_user]
 
     with patch("services.auth_service.hash_password", return_value="hashed123"):
         response, status = reset_password_by_token("valid-token", "newpassword")
