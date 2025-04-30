@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify
 import requests
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
+
 
 load_dotenv()
 app = Flask(__name__)
-
+CORS(app, origins=["http://localhost:4200", "https://proyecto-grupo-4-73827233792.us-central1.run.app"])
 # URLs y prefijos reales
 SERVICES = {
     'auth': os.getenv("AUTH_SERVICE_URL"),
