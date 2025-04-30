@@ -40,3 +40,24 @@ jobs:
       with:
         name: coverage-${{ matrix.service }}
         path: ${{ matrix.service }}/.coverage*
+
+  deploy:
+    needs: test-all
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+    - name: 🔐 Configurar clave SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.GCP_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🚀 Desplegar en el servidor Ubuntu (GCP)
+      run: |
+        ssh -i ~/.ssh/id_ed25519 ${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }} << 'EOF'
+          cd ~/MISW4501-Grupo4-Proyecto/server_backend
+          git pull origin main
+          docker-compose down
+        EOF
