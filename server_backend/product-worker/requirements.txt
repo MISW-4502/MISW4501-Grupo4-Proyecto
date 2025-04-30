@@ -3,3 +3,4 @@ pika
 psycopg2-binary
 python-json-logger
 flask-cors
+gunicorn

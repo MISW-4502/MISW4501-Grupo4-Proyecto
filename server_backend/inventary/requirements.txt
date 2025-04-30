@@ -6,3 +6,4 @@ openpyxl
 pika
 flask-cors
 requests
+gunicorn
