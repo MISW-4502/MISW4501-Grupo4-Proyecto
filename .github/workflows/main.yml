@@ -23,7 +23,7 @@ jobs:
 
     - name: 📦 Instalar dependencias
       run: |
-        cd ${{ matrix.service }}
+        cd server_backend ${{ matrix.service }}
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov
