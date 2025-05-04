@@ -34,9 +34,9 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -50,9 +50,9 @@ services:
     ports:
       - "3300:3300"
     environment:
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -70,9 +70,9 @@ services:
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
       QUEUE_NAME: product_queue
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -90,9 +90,9 @@ services:
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
       QUEUE_NAME: product_queue
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -110,9 +110,9 @@ services:
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
       QUEUE_NAME: order_queue
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -130,9 +130,9 @@ services:
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
       QUEUE_NAME: order_queue
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_duck
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
@@ -150,9 +150,9 @@ services:
       RABBITMQ_USER: admin
       RABBITMQ_PASSWORD: admin
       QUEUE_NAME: manufacturer_queue
-      DB_HOST: 34.135.147.249
+      DB_HOST: 34.10.119.155
       DB_PORT: 5432
-      DB_NAME: postgres
+      DB_NAME: db_ducks
       DB_USER: postgres
       DB_PASSWORD: postgres123
     depends_on:
