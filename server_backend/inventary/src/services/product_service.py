@@ -106,6 +106,16 @@ def create_product(data):
         session.close()
 
 
+def list_products_by_ids(ids):
+    session = get_session()
+    try:
+        products = session.query(Product.producto_id, Product.nombre).filter(Product.producto_id.in_(ids)).all()
+        return [{"producto_id": p.producto_id, "nombre": p.nombre} for p in products], None
+    finally:
+        session.close()
+
+
+
 def list_products(product_id=None):
     session = get_session()
     try:
