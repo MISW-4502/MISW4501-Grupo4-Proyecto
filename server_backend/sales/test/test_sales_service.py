@@ -10,7 +10,8 @@ from src.services.sales_service import (
     eliminateItemOrder,
     eliminatedOrder,
     getOrdersByClientId,
-    getOrdersBySellerId
+    getOrdersBySellerId,
+    getOrderById
 )
 
 class FakeDetalle:
@@ -40,17 +41,6 @@ def test_get_orders(mock_session, fake_pedido):
     result = getOrders()
     assert isinstance(result, list)
     assert result[0]["pedido_id"] == 1
-
-# 🔹 Test: getOrderById devuelve pedido con detalles
-@patch("src.services.sales_service.get_session")
-def test_get_order_by_id(mock_session, fake_pedido):
-    mock_s = MagicMock()
-    mock_s.query().filter_by().first.return_value = fake_pedido
-    mock_session.return_value = mock_s
-
-    result = getOrderById(1)
-    assert result["pedido_id"] == 1
-    assert len(result["detalles"]) == 1
 
 # 🔹 Test: eliminar pedido sin estado PENDIENTE
 @patch("src.services.sales_service.get_session")
@@ -129,7 +119,7 @@ def test_get_order_by_id_not_found(mock_session):
     mock_s.query().filter_by().first.return_value = None
     mock_session.return_value = mock_s
 
-    result = getOrderById(999)
+    result = getOrderById(999, token="fake_token")  # ← token agregado
     assert result is None
 
 
@@ -254,3 +244,29 @@ def test_get_orders_by_seller_empty(mock_session):
 
     result = getOrdersBySellerId(999)
     assert result == []
+
+
+
+@patch("src.services.sales_service.get_session")
+@patch("src.services.sales_service.requests.get")
+def test_get_order_by_id_with_token(mock_requests_get, mock_get_session, fake_pedido):
+    # Mock de la sesión y pedido
+    mock_session = MagicMock()
+    mock_session.query().filter_by().first.return_value = fake_pedido
+    mock_get_session.return_value = mock_session
+
+    # Mock de la respuesta HTTP
+    mock_requests_get.return_value.status_code = 200
+    mock_requests_get.return_value.json.return_value = [
+        {"producto_id": 1, "nombre": "Producto Test"}
+    ]
+
+    # Ejecutar función
+    token = "fake_token"
+    result = getOrderById(1, token)
+
+    # Verificaciones
+    assert result["pedido_id"] == 1
+    assert result["detalles"][0]["nombre"] == "Producto Test"
+    assert mock_requests_get.called
+    assert "Authorization" in mock_requests_get.call_args[1]["headers"]
