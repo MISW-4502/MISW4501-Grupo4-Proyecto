@@ -106,6 +106,7 @@ services:
     ports:
       - "3500:3500"
     environment:
+      INVENTARY_SERVICE_URL: http://inventary-service:3400
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
