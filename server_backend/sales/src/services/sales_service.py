@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 from src.config.config import Config
 from src.models.sales_models import Pedido,DetallePedido
 import requests
-import os
 from decimal import Decimal
 
 
@@ -32,19 +31,35 @@ def getOrders():
     finally:
         session.close()
 
-def getOrderById(pedido_id):
+def getOrderById(pedido_id,token):
     session = get_session()
     try:
         pedido = session.query(Pedido).filter_by(pedido_id=pedido_id).first()
         if not pedido:
             return None
 
-        detalles = [{
-            "id_producto": d.id_producto,
-            "cantidad": d.cantidad,
-            "precio_unitario": float(d.precio_unitario),
-            "subtotal": float(d.subtotal)
-        } for d in pedido.detalles]
+        detalles = []
+        for d in pedido.detalles:
+            # Llamada al microservicio de inventario para obtener el nombre del producto
+            try:
+                response = requests.get(f"http://inventary-service:3400/inventary/products/{d.id_producto}",headers={"Authorization": f"Bearer {token}"},timeout=3)
+
+                if response.status_code == 200:
+                    product_data = response.json()
+                    nombre_producto = product_data.get("nombre", "Nombre no disponible")
+                else:
+                    nombre_producto = "Producto no encontrado"
+            except Exception as e:
+                nombre_producto = f"Error al consultar producto: {str(e)}"
+            print(f"Nombre obtenido: {nombre_producto}")
+            detalles.append({
+                
+                "cantidad": d.cantidad,
+                "id_producto": d.id_producto,
+                "nombre": nombre_producto,
+                "precio_unitario": float(d.precio_unitario),
+                "subtotal": float(d.subtotal)
+            })
 
         return {
             "pedido_id": pedido.pedido_id,
@@ -57,6 +72,8 @@ def getOrderById(pedido_id):
         }
     finally:
         session.close()
+
+
 
 def editOrder(pedido_id, data):
     session = get_session()

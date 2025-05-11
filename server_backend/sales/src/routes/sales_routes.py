@@ -11,6 +11,9 @@ from src.services.sales_service import (
     getOrdersByClientId,
     getOrdersBySellerId
 )
+from src.utils.auth_utils import token_required_remote
+
+
 
 sales_bp = Blueprint('sales', __name__)
 
@@ -20,6 +23,7 @@ def ping():
 
 
 @sales_bp.route('/sales', methods=['POST'])
+@token_required_remote
 def create_order():
     data = request.get_json()
 
@@ -45,18 +49,25 @@ def create_order():
 
 
 @sales_bp.route('/sales', methods=['GET'])
+@token_required_remote
 def list_orders():
     return jsonify(getOrders()), 200
 
 @sales_bp.route('/sales/<int:pedido_id>', methods=['GET'])
+@token_required_remote
 def get_order(pedido_id):
-    pedido = getOrderById(pedido_id)
+    auth_header = request.headers.get("Authorization")
+    token = None
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+    pedido = getOrderById(pedido_id,token)
     if not pedido:
         return jsonify({"error": "Pedido no encontrado"}), 404
     return jsonify(pedido), 200
 
 
 @sales_bp.route('/sales/<int:pedido_id>', methods=['PATCH'])
+@token_required_remote
 def update_order(pedido_id):
     data = request.get_json()
     result, status = editOrder(pedido_id, data)
@@ -64,6 +75,7 @@ def update_order(pedido_id):
 
 
 @sales_bp.route('/sales/<int:pedido_id>/items', methods=['PATCH'])
+@token_required_remote
 def update_multiple_items(pedido_id):
     data = request.get_json()
     items = data.get("items")
@@ -75,18 +87,21 @@ def update_multiple_items(pedido_id):
 
 
 @sales_bp.route('/sales/<int:pedido_id>/items/<int:id_producto>', methods=['DELETE'])
+@token_required_remote
 def delete_item(pedido_id, id_producto):
     result, status = eliminateItemOrder(pedido_id, id_producto)
     return jsonify(result), status
 
 
 @sales_bp.route('/sales/<int:pedido_id>', methods=['DELETE'])
+@token_required_remote
 def delete_order(pedido_id):
     result, status = eliminatedOrder(pedido_id)
     return jsonify(result), status
 
 
 @sales_bp.route('/sales/client/<int:id_cliente>', methods=['GET'])
+@token_required_remote
 def get_orders_by_client(id_cliente):
     pedidos = getOrdersByClientId(id_cliente)
     if not pedidos:
@@ -95,6 +110,7 @@ def get_orders_by_client(id_cliente):
 
 
 @sales_bp.route('/sales/seller/<int:id_vendedor>', methods=['GET'])
+@token_required_remote
 def get_orders_by_seller(id_vendedor):
     pedidos = getOrdersBySellerId(id_vendedor)
     if not pedidos:
