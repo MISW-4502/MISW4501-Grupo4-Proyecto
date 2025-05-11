@@ -4,7 +4,9 @@ from src.services.product_service import (
     list_products,
     update_product,
     delete_product,
-    create_product
+    create_product,
+    list_products_by_ids
+    
 )
 from src.utils.auth_utils import token_required_remote
 
@@ -41,6 +43,30 @@ def create_product_endpoint():
         return jsonify({'error': error}), 400
     return jsonify(result), 201
 
+@inventary_bp.route('/products', methods=['GET'])
+@token_required_remote
+def get_multiple_products():
+    try:
+        ids_param = request.args.get('ids')
+        print(f"Query param recibido: {ids_param}")  # debug
+
+        if not ids_param:
+            return jsonify({'error': 'No se proporcionaron IDs'}), 400
+
+        ids = [int(x) for x in ids_param.split(',') if x.isdigit()]
+        print(f"IDs parseados: {ids}")  # debug
+
+        if not ids:
+            return jsonify({'error': 'IDs inválidos'}), 400
+
+        result, error = list_products_by_ids(ids)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+
 @inventary_bp.route('/products/<int:product_id>', methods=['GET'])
 @token_required_remote
 def get_product(product_id):
@@ -52,7 +78,9 @@ def get_product(product_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@inventary_bp.route('/products', methods=['GET'])
+
+
+@inventary_bp.route('/products/all', methods=['GET'])
 @token_required_remote
 def get_all_products():
     try:

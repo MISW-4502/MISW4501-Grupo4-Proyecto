@@ -4,6 +4,7 @@ from src.config.config import Config
 from src.models.sales_models import Pedido,DetallePedido
 import requests
 from decimal import Decimal
+from concurrent.futures import ThreadPoolExecutor
 
 
 def get_session():
@@ -31,29 +32,40 @@ def getOrders():
     finally:
         session.close()
 
-def getOrderById(pedido_id,token):
+
+
+import requests
+
+def getOrderById(pedido_id, token):
     session = get_session()
     try:
         pedido = session.query(Pedido).filter_by(pedido_id=pedido_id).first()
         if not pedido:
             return None
 
+        producto_ids = [d.id_producto for d in pedido.detalles]
+
+        # Solicitud optimizada al inventary-service con múltiples IDs
+        try:
+            response = requests.get(
+                "http://inventary-service:3400/inventary/products",
+                headers={"Authorization": f"Bearer {token}"},
+                params={"ids": ",".join(map(str, producto_ids))},
+                timeout=3
+            )
+
+            if response.status_code == 200:
+                productos = response.json()
+                productos_dict = {p["producto_id"]: p["nombre"] for p in productos}
+            else:
+                productos_dict = {}
+        except Exception as e:
+            productos_dict = {}
+
         detalles = []
         for d in pedido.detalles:
-            # Llamada al microservicio de inventario para obtener el nombre del producto
-            try:
-                response = requests.get(f"http://inventary-service:3400/inventary/products/{d.id_producto}",headers={"Authorization": f"Bearer {token}"},timeout=3)
-
-                if response.status_code == 200:
-                    product_data = response.json()
-                    nombre_producto = product_data.get("nombre", "Nombre no disponible")
-                else:
-                    nombre_producto = "Producto no encontrado"
-            except Exception as e:
-                nombre_producto = f"Error al consultar producto: {str(e)}"
-            print(f"Nombre obtenido: {nombre_producto}")
+            nombre_producto = productos_dict.get(d.id_producto, "Nombre no disponible")
             detalles.append({
-                
                 "cantidad": d.cantidad,
                 "id_producto": d.id_producto,
                 "nombre": nombre_producto,
@@ -72,6 +84,8 @@ def getOrderById(pedido_id,token):
         }
     finally:
         session.close()
+
+
 
 
 
