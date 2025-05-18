@@ -6,6 +6,9 @@ import requests
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 
+INVENTARY_SERVICE_URL = "http://inventary-service:3400"
+HEADERS = lambda token: {"Authorization": f"Bearer {token}"}
+
 
 def get_session():
     engine = create_engine(
@@ -85,10 +88,6 @@ def getOrderById(pedido_id, token):
     finally:
         session.close()
 
-
-
-
-
 def editOrder(pedido_id, data):
     session = get_session()
     try:
@@ -111,7 +110,7 @@ def editOrder(pedido_id, data):
         session.close()  
     
 
-def editOrAddItemsOrder(pedido_id, items):
+def editOrAddItemsOrder(pedido_id, items ,token):
     session = get_session()
     try:
         pedido = session.query(Pedido).filter_by(pedido_id=pedido_id).first()
@@ -135,18 +134,29 @@ def editOrAddItemsOrder(pedido_id, items):
                 continue
 
             detalle = session.query(DetallePedido).filter_by(
-                id_pedido=pedido_id,
-                id_producto=id_producto
-            ).first()
+            id_pedido=pedido_id,id_producto=id_producto).first()
 
             subtotal = Decimal(str(precio_unitario)) * Decimal(str(cantidad))
 
             if detalle:
+                diferencia = cantidad - detalle.cantidad
+                if diferencia > 0:
+                    success, error = reservar_stock(id_producto, diferencia, token)
+                    if not success:
+                        errores.append({"id_producto": id_producto, "error": error or "No se pudo reservar stock"})
+                        continue
+                elif diferencia < 0:
+                    liberar_stock(id_producto, abs(diferencia), token)
+
                 detalle.cantidad = cantidad
                 detalle.precio_unitario = precio_unitario
                 detalle.subtotal = subtotal
                 modificados += 1
             else:
+                success, error = reservar_stock(id_producto, cantidad, token)
+                if not success:
+                    errores.append({"id_producto": id_producto, "error": error or "No se pudo reservar stock"})
+                    continue
                 nuevo = DetallePedido(
                     id_pedido=pedido_id,
                     id_producto=id_producto,
@@ -156,6 +166,7 @@ def editOrAddItemsOrder(pedido_id, items):
                 )
                 session.add(nuevo)
                 nuevos += 1
+
 
         # Recalcular total del pedido
         pedido.total = sum(Decimal(str(d.subtotal)) for d in pedido.detalles)
@@ -177,9 +188,7 @@ def editOrAddItemsOrder(pedido_id, items):
         session.close()
 
 
-
-
-def eliminateItemOrder(pedido_id, id_producto):
+def eliminateItemOrder(pedido_id, id_producto, token):
     session = get_session()
     try:
         detalle = session.query(DetallePedido).filter_by(
@@ -194,6 +203,7 @@ def eliminateItemOrder(pedido_id, id_producto):
             return {"error": "Solo se pueden eliminar productos de pedidos PENDIENTES"}, 400
 
         session.delete(detalle)
+        liberar_stock(id_producto, detalle.cantidad, token)
 
         # Recalcular total del pedido
         pedido = detalle.pedido
@@ -206,7 +216,7 @@ def eliminateItemOrder(pedido_id, id_producto):
         session.close()
 
 
-def eliminatedOrder(pedido_id):
+def eliminatedOrder(pedido_id,token):
     session = get_session()
     try:
         pedido = session.query(Pedido).filter_by(pedido_id=pedido_id).first()
@@ -215,6 +225,9 @@ def eliminatedOrder(pedido_id):
 
         if pedido.estado != "PENDIENTE":
             return {"error": "Solo se pueden eliminar pedidos en estado PENDIENTE"}, 400
+
+        for detalle in pedido.detalles:
+            liberar_stock(detalle.id_producto, detalle.cantidad, token)
 
         session.delete(pedido)  # esto también elimina los detalles si tienes cascade="all, delete-orphan"
         session.commit()
@@ -254,7 +267,8 @@ def getOrdersByClientId(id_cliente):
         session.close()
 
 
-def getOrdersBySellerId(id_vendedor):
+def getOrdersBySellerId(id_vendedor):\
+
     session = get_session()
     try:
         pedidos = session.query(Pedido).filter_by(id_vendedor=id_vendedor).all()
@@ -282,3 +296,45 @@ def getOrdersBySellerId(id_vendedor):
         ]
     finally:
         session.close()
+
+
+def reservar_stock(id_producto, cantidad, token):
+    try:
+        res = requests.post(
+           f"{INVENTARY_SERVICE_URL}/inventary/products/{id_producto}/reserve",
+            json={"cantidad": cantidad},
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=3
+        )
+        if res.status_code == 200:
+            return True, None
+        else:
+            try:
+                error = res.json().get("error", f"Status {res.status_code}")
+            except ValueError:
+                error = f"Respuesta inválida del inventario: {res.text}"
+            return False, error
+    except Exception as e:
+        return False, str(e)
+
+
+def liberar_stock(id_producto, cantidad, token):
+    try:
+        res = requests.post(
+            f"{INVENTARY_SERVICE_URL}/inventary/products/{id_producto}/release",
+            json={"cantidad": cantidad},
+            headers=HEADERS(token),
+            timeout=3
+        )
+        if res.status_code == 200:
+            return True, None
+        else:
+            try:
+                error = res.json().get("error", f"Status {res.status_code}")
+            except ValueError:
+                error = f"Respuesta inválida del inventario: {res.text}"
+            return False, error   
+
+
+    except Exception as e:
+        return False, str(e)
