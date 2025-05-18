@@ -1,0 +1,4 @@
+flask
+gunicorn
+pika
+python-json-logger

@@ -1,0 +1,6 @@
+flask
+gunicorn
+opencv-python
+pika
+numpy
+python-json-logger

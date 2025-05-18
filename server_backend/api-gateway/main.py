@@ -13,6 +13,7 @@ SERVICES = {
     'truck': os.getenv("TRUCK_SERVICE_URL"),
     'manufacturer': os.getenv("MANUFACTURER_SERVICE_URL"),
     'inventary': os.getenv("INVENTARY_SERVICE_URL"),
+    'images' : os.getenv("IMAGES_SERVICE_URL")
 }
 
 # Prefijos internos de ruta para cada servicio
@@ -22,6 +23,7 @@ SERVICE_PREFIXES = {
     'truck': 'truck',
     'manufacturer': 'manufacturer',
     'inventary': 'inventary',
+    'images' : 'images'
 }
 
 @app.route('/<service>/<path:path>', methods=["GET", "POST", "PUT", "DELETE", "PATCH"])

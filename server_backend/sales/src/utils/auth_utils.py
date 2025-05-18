@@ -29,3 +29,10 @@ def token_required_remote(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def get_token_from_request():
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None

@@ -200,3 +200,40 @@ def delete_product(producto_id):
         return False, str(e)
     finally:
         session.close()
+
+
+def r_stock(producto_id, cantidad):
+    session = get_session()
+    try:
+        product = session.query(Product).get(producto_id)
+        if not product:
+            return False, "Producto no encontrado"
+
+        if product.cantidad is None or product.cantidad < cantidad:
+            return False, "Stock insuficiente"
+
+        product.cantidad -= cantidad
+        session.commit()
+        return True, None
+    except Exception as e:
+        session.rollback()
+        return False, str(e)
+    finally:
+        session.close()
+
+
+def rel_stock(producto_id, cantidad):
+    session = get_session()
+    try:
+        product = session.query(Product).get(producto_id)
+        if not product:
+            return False, "Producto no encontrado"
+
+        product.cantidad = (product.cantidad or 0) + cantidad
+        session.commit()
+        return True, None
+    except Exception as e:
+        session.rollback()
+        return False, str(e)
+    finally:
+        session.close()
