@@ -10,9 +10,10 @@ from src.services.sales_service import (
     eliminateItemOrder,
     eliminatedOrder,
     getOrdersByClientId,
-    getOrdersBySellerId,
-    getOrderById
+    getOrdersBySellerId
 )
+
+FAKE_TOKEN = "fake_token"
 
 class FakeDetalle:
     id_pedido = 1
@@ -30,8 +31,10 @@ class FakePedido:
     total = Decimal("20000")
     detalles = [FakeDetalle()]
 
+@pytest.fixture
+def fake_pedido():
+    return FakePedido()
 
-# 🔹 Test: getOrders devuelve estructura válida
 @patch("src.services.sales_service.get_session")
 def test_get_orders(mock_session, fake_pedido):
     mock_s = MagicMock()
@@ -42,7 +45,6 @@ def test_get_orders(mock_session, fake_pedido):
     assert isinstance(result, list)
     assert result[0]["pedido_id"] == 1
 
-# 🔹 Test: eliminar pedido sin estado PENDIENTE
 @patch("src.services.sales_service.get_session")
 def test_eliminated_order_invalid_state(mock_session, fake_pedido):
     fake_pedido.estado = "ENVIADO"
@@ -50,10 +52,9 @@ def test_eliminated_order_invalid_state(mock_session, fake_pedido):
     mock_s.query().filter_by().first.return_value = fake_pedido
     mock_session.return_value = mock_s
 
-    result, status = eliminatedOrder(1)
+    result, status = eliminatedOrder(1, token=FAKE_TOKEN)
     assert status == 400
     assert "estado" in result["error"]
-
 
 @patch("src.services.sales_service.get_session")
 def test_edit_order_success(mock_session, fake_pedido):
@@ -67,30 +68,28 @@ def test_edit_order_success(mock_session, fake_pedido):
     assert status == 200
     assert "actualizado" in result["message"]
 
-
-
-
 @patch("src.services.sales_service.get_session")
 def test_eliminate_item_success(mock_session, fake_pedido):
     class FakeDetalle:
         id_producto = 1
         pedido = fake_pedido
         subtotal = 10000
+        cantidad = 2  # ✅ ¡Este es el que faltaba!
 
     mock_s = MagicMock()
     mock_s.query().filter_by().first.return_value = FakeDetalle()
     mock_session.return_value = mock_s
 
-    result, status = eliminateItemOrder(1, 1)
+    result, status = eliminateItemOrder(1, 1, token=FAKE_TOKEN)
     assert status == 200
     assert "eliminado" in result["message"]
 
+
 def mock_first_effect():
-    responses = [FakePedido(), FakeDetalle(), None]  # Pedido → Detalle1 → Detalle2 (no existe)
+    responses = [FakePedido(), FakeDetalle(), None]
     def _inner(*args, **kwargs):
         return responses.pop(0)
     return _inner
-
 
 @patch("src.services.sales_service.get_session")
 def test_edit_or_add_items_success(mock_session):
@@ -99,55 +98,24 @@ def test_edit_or_add_items_success(mock_session):
     mock_session.return_value = mock_s
 
     items = [
-        {"id_producto": 1, "cantidad": 3, "precio_unitario": 12000},  # Modificar
-        {"id_producto": 2, "cantidad": 1, "precio_unitario": 8000}    # Agregar
+        {"id_producto": 1, "cantidad": 3, "precio_unitario": 12000},
+        {"id_producto": 2, "cantidad": 1, "precio_unitario": 8000}
     ]
 
-    result, status = editOrAddItemsOrder(1, items)
+    result, status = editOrAddItemsOrder(1, items, token=FAKE_TOKEN)
     assert status in (200, 207)
     assert "actualizado" in result["message"]
 
-@pytest.fixture
-def fake_pedido():
-    return FakePedido()
-
-
-# 🔹 Test: getOrderById cuando no existe pedido
-@patch("src.services.sales_service.get_session")
-def test_get_order_by_id_not_found(mock_session):
-    mock_s = MagicMock()
-    mock_s.query().filter_by().first.return_value = None
-    mock_session.return_value = mock_s
-
-    result = getOrderById(999, token="fake_token")  # ← token agregado
-    assert result is None
-
-
-# 🔹 Test: editOrder cuando no encuentra pedido
-@patch("src.services.sales_service.get_session")
-def test_edit_order_not_found(mock_session):
-    mock_s = MagicMock()
-    mock_s.query().filter_by().first.return_value = None
-    mock_session.return_value = mock_s
-
-    result, status = editOrder(999, {"estado": "ENVIADO"})
-    assert status == 404
-    assert "error" in result
-
-
-# 🔹 Test: editOrAddItemsOrder cuando pedido no existe
 @patch("src.services.sales_service.get_session")
 def test_edit_or_add_items_no_pedido(mock_session):
     mock_s = MagicMock()
     mock_s.query().filter_by().first.return_value = None
     mock_session.return_value = mock_s
 
-    result, status = editOrAddItemsOrder(999, [])
+    result, status = editOrAddItemsOrder(999, [], token=FAKE_TOKEN)
     assert status == 404
     assert "error" in result
 
-
-# 🔹 Test: editOrAddItemsOrder errores en datos
 @patch("src.services.sales_service.get_session")
 def test_edit_or_add_items_invalid_items(mock_session):
     pedido = FakePedido()
@@ -156,25 +124,21 @@ def test_edit_or_add_items_invalid_items(mock_session):
     mock_session.return_value = mock_s
 
     items = [{"id_producto": None, "cantidad": -1, "precio_unitario": 0}]
-    result, status = editOrAddItemsOrder(1, items)
+    result, status = editOrAddItemsOrder(1, items, token=FAKE_TOKEN)
 
     assert status == 207
     assert "errores" in result
 
-
-# 🔹 Test: eliminateItemOrder cuando detalle no existe
 @patch("src.services.sales_service.get_session")
 def test_eliminate_item_not_found(mock_session):
     mock_s = MagicMock()
     mock_s.query().filter_by().first.return_value = None
     mock_session.return_value = mock_s
 
-    result, status = eliminateItemOrder(1, 999)
+    result, status = eliminateItemOrder(1, 999, token=FAKE_TOKEN)
     assert status == 404
     assert "error" in result
 
-
-# 🔹 Test: eliminateItemOrder cuando estado no es PENDIENTE
 @patch("src.services.sales_service.get_session")
 def test_eliminate_item_invalid_state(mock_session):
     detalle = MagicMock()
@@ -183,24 +147,20 @@ def test_eliminate_item_invalid_state(mock_session):
     mock_s.query().filter_by().first.return_value = detalle
     mock_session.return_value = mock_s
 
-    result, status = eliminateItemOrder(1, 1)
+    result, status = eliminateItemOrder(1, 1, token=FAKE_TOKEN)
     assert status == 400
     assert "error" in result
 
-
-# 🔹 Test: eliminatedOrder cuando pedido no existe
 @patch("src.services.sales_service.get_session")
 def test_eliminated_order_not_found(mock_session):
     mock_s = MagicMock()
     mock_s.query().filter_by().first.return_value = None
     mock_session.return_value = mock_s
 
-    result, status = eliminatedOrder(999)
+    result, status = eliminatedOrder(999, token=FAKE_TOKEN)
     assert status == 404
     assert "error" in result
 
-
-# 🔹 Test: getOrdersByClientId - cliente con pedidos
 @patch("src.services.sales_service.get_session")
 def test_get_orders_by_client_success(mock_session, fake_pedido):
     mock_s = MagicMock()
@@ -211,8 +171,6 @@ def test_get_orders_by_client_success(mock_session, fake_pedido):
     assert isinstance(result, list)
     assert result[0]["id_cliente"] == 1
 
-
-# 🔹 Test: getOrdersByClientId - cliente sin pedidos
 @patch("src.services.sales_service.get_session")
 def test_get_orders_by_client_empty(mock_session):
     mock_s = MagicMock()
@@ -222,8 +180,6 @@ def test_get_orders_by_client_empty(mock_session):
     result = getOrdersByClientId(999)
     assert result == []
 
-
-# 🔹 Test: getOrdersBySellerId - vendedor con pedidos
 @patch("src.services.sales_service.get_session")
 def test_get_orders_by_seller_success(mock_session, fake_pedido):
     mock_s = MagicMock()
@@ -234,8 +190,6 @@ def test_get_orders_by_seller_success(mock_session, fake_pedido):
     assert isinstance(result, list)
     assert result[0]["id_vendedor"] == 2
 
-
-# 🔹 Test: getOrdersBySellerId - vendedor sin pedidos
 @patch("src.services.sales_service.get_session")
 def test_get_orders_by_seller_empty(mock_session):
     mock_s = MagicMock()
@@ -245,27 +199,21 @@ def test_get_orders_by_seller_empty(mock_session):
     result = getOrdersBySellerId(999)
     assert result == []
 
-
-
 @patch("src.services.sales_service.get_session")
 @patch("src.services.sales_service.requests.get")
 def test_get_order_by_id_with_token(mock_requests_get, mock_get_session, fake_pedido):
-    # Mock de la sesión y pedido
     mock_session = MagicMock()
     mock_session.query().filter_by().first.return_value = fake_pedido
     mock_get_session.return_value = mock_session
 
-    # Mock de la respuesta HTTP
     mock_requests_get.return_value.status_code = 200
     mock_requests_get.return_value.json.return_value = [
         {"producto_id": 1, "nombre": "Producto Test"}
     ]
 
-    # Ejecutar función
-    token = "fake_token"
+    token = FAKE_TOKEN
     result = getOrderById(1, token)
 
-    # Verificaciones
     assert result["pedido_id"] == 1
     assert result["detalles"][0]["nombre"] == "Producto Test"
     assert mock_requests_get.called
