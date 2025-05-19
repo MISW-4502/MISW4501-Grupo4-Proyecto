@@ -106,6 +106,7 @@ services:
     ports:
       - "3500:3500"
     environment:
+      INVENTARY_SERVICE_URL: http://inventary-service:3400
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: admin
       RABBITMQ_PASS: admin
@@ -160,6 +161,34 @@ services:
     networks:
       - backend_net
 
+  images-service:
+      build: ./images-service
+      container_name: images-service
+      ports:
+        - "3600:3600"
+      environment:
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_USER: admin
+        RABBITMQ_PASS: admin
+        QUEUE_NAME: frame_queue
+      depends_on:
+        - rabbitmq
+      networks:
+        - backend_net
+        
+  process-images-service:
+    build: ./images-service-worker
+    container_name: process-images-worker
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+      QUEUE_NAME: frame_queue
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend_net
+
   api-gateway:
     build:
       context: ./api-gateway
@@ -173,6 +202,7 @@ services:
       - order-worker
       - manufacturer-service
       - inventary-service
+      - images-service
     env_file:
       - ./api-gateway/.env
     networks:

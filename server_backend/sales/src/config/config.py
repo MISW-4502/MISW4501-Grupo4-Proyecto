@@ -11,3 +11,4 @@ class Config:
         "pool_timeout": 30,      # Tiempo máximo para esperar una conexión antes de error
         "pool_recycle": 1800     # Reciclar conexiones cada 30 minutos
     }
+    INVENTARY_SERVICE_URL = os.getenv("INVENTARY_SERVICE_URL", "http://inventary-service:3400")

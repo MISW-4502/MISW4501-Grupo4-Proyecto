@@ -4,8 +4,12 @@ from src.services.product_service import (
     list_products,
     update_product,
     delete_product,
-    create_product
+    create_product,
+    list_products_by_ids,
+    r_stock,
+    rel_stock    
 )
+
 from src.utils.auth_utils import token_required_remote
 
 inventary_bp = Blueprint('invetary', __name__)
@@ -41,6 +45,27 @@ def create_product_endpoint():
         return jsonify({'error': error}), 400
     return jsonify(result), 201
 
+@inventary_bp.route('/products', methods=['GET'])
+@token_required_remote
+def get_multiple_products():
+    try:
+        ids_param = request.args.get('ids')
+        print(f"Query param recibido: {ids_param}")  # debug
+
+        if not ids_param:
+            return jsonify({'error': 'No se proporcionaron IDs'}), 400
+
+        ids = [int(x) for x in ids_param.split(',') if x.isdigit()]
+        print(f"IDs parseados: {ids}")  # debug
+
+        if not ids:
+            return jsonify({'error': 'IDs inválidos'}), 400
+
+        result, error = list_products_by_ids(ids)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @inventary_bp.route('/products/<int:product_id>', methods=['GET'])
 @token_required_remote
 def get_product(product_id):
@@ -52,7 +77,8 @@ def get_product(product_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@inventary_bp.route('/products', methods=['GET'])
+
+@inventary_bp.route('/products/all', methods=['GET'])
 @token_required_remote
 def get_all_products():
     try:
@@ -83,3 +109,35 @@ def remove_product(product_id):
         return jsonify({'error': error}), 404
     return jsonify({'message': 'Producto eliminado correctamente'}), 200
 
+
+
+@inventary_bp.route('/products/<int:product_id>/reserve', methods=['POST'])
+@token_required_remote
+def reserve_stock(product_id):
+    data = request.get_json()
+    cantidad = data.get("cantidad")
+
+    if not isinstance(cantidad, int) or cantidad <= 0:
+        return jsonify({'error': 'Cantidad inválida'}), 400
+
+    success, error = r_stock(product_id, cantidad)
+    if success:
+        return jsonify({'message': 'Stock reservado correctamente'}), 200
+    else:
+        return jsonify({'error': error}), 409 if "Stock insuficiente" in error else 404
+
+
+@inventary_bp.route('/products/<int:product_id>/release', methods=['POST'])
+@token_required_remote
+def release_stock(product_id):
+    data = request.get_json()
+    cantidad = data.get("cantidad")
+
+    if not isinstance(cantidad, int) or cantidad <= 0:
+        return jsonify({'error': 'Cantidad inválida'}), 400
+
+    success, error = rel_stock(product_id, cantidad)
+    if success:
+        return jsonify({'message': 'Stock liberado correctamente'}), 200
+    else:
+        return jsonify({'error': error}), 404

@@ -3,8 +3,8 @@ name: CI/CD Server Backend
 on:
   push:
     branches:
-      - dev
-
+      - dev 
+      
 jobs:
   test-all:
     runs-on: ubuntu-latest
@@ -49,6 +49,24 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
+        name: coverage-${{ matrix.service }}
+        path: ${{ matrix.service }}/.coverage*
+    - name: 🛡️ Instalar y autenticar Snyk
+      run: |
+        npm install -g snyk snyk-to-html
+        snyk auth 425e08a3-ab1d-4875-aef7-6be75d6de1c1
+
+    - name: 🔍 Escanear dependencias con Snyk
+      run: |
+        cd server_backend/${{ matrix.service }}
+        snyk test --file=requirements.txt --package-manager=pip --severity-threshold=high --json \
+          | snyk-to-html -o ../../snyk-report-${{ matrix.service }}.html || true
+
+    - name: 📤 Subir artefactos (coverage + snyk)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+
         name: reports-${{ matrix.service }}
         path: |
           server_backend/${{ matrix.service }}/.coverage*
@@ -65,4 +83,16 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+
+
+    - name: 🚀 Desplegar en el servidor Ubuntu (GCP)
+      run: |
+        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << "EOF"
+          cd ~/MISW4501-Grupo4-Proyecto/server_backend/
+          git pull
+          docker-compose down
+          docker-compose up --build -d
+        EOF
+
