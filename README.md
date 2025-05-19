@@ -111,13 +111,5 @@ pytest
 - PostgreSQL 12+
 - Node.js 18+ (solo para `api-gateway` y ngrok local dev)
 
-## ✨ Mejoras futuras
-
-- Integración con Cloud SQL y Secret Manager
-- Pruebas E2E
-- Métricas con Prometheus + Grafana
-- Balanceo de carga con Traefik o NGINX
-
-## 📧 Contacto
 
 Grupo 4 - MISW4501
