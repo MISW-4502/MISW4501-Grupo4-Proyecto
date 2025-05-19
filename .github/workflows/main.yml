@@ -41,6 +41,25 @@ jobs:
       with:
         name: coverage-${{ matrix.service }}
         path: ${{ matrix.service }}/.coverage*
+    - name: 🛡️ Instalar y autenticar Snyk
+      run: |
+        npm install -g snyk snyk-to-html
+        snyk auth 425e08a3-ab1d-4875-aef7-6be75d6de1c1
+
+    - name: 🔍 Escanear dependencias con Snyk
+      run: |
+        cd server_backend/${{ matrix.service }}
+        snyk test --file=requirements.txt --package-manager=pip --severity-threshold=high --json \
+          | snyk-to-html -o ../../snyk-report-${{ matrix.service }}.html || true
+
+    - name: 📤 Subir artefactos (coverage + snyk)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: reports-${{ matrix.service }}
+        path: |
+          server_backend/${{ matrix.service }}/.coverage*
+          snyk-report-${{ matrix.service }}.html
 
   deploy:
     needs: test-all
