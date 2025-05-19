@@ -8,7 +8,6 @@ on:
 jobs:
   test-all:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         service: [auth, truck, manufacturer, inventary, sales]
@@ -31,11 +30,22 @@ jobs:
 
     - name: 🧪 Ejecutar tests con coverage
       run: |
-        cd server_backend/${{ matrix.service }}
+        cd server_backend/${{matrix.service}}
         export PYTHONPATH=src
         pytest --cov=src --cov-report=term
 
-    - name: 📤 Subir reportes como artefactos (opcional)
+    - name: 🛡️ Instalar y autenticar Snyk
+      run: |
+        npm install -g snyk snyk-to-html
+        snyk auth 425e08a3-ab1d-4875-aef7-6be75d6de1c1
+
+    - name: 🔍 Escanear dependencias con Snyk
+      run: |
+        cd server_backend/${{ matrix.service }}
+        snyk test --file=requirements.txt --package-manager=pip --severity-threshold=high --json \
+          | snyk-to-html -o ../../snyk-report-${{ matrix.service }}.html || true
+
+    - name: 📤 Subir artefactos (coverage + snyk)
       if: always()
       uses: actions/upload-artifact@v4
       with:
@@ -56,6 +66,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
+
         name: reports-${{ matrix.service }}
         path: |
           server_backend/${{ matrix.service }}/.coverage*
@@ -84,3 +95,4 @@ jobs:
           docker-compose down
           docker-compose up --build -d
         EOF
+
